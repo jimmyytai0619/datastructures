@@ -5,34 +5,41 @@ import java.util.List;
 
 public class Patient {
     private String name;
-    private int id;
-    private String treatmentType;
-    private List<String> treatmentHistory;  // keep track of all treatments
+    private int age;
+    private String id;
+    private List<Treatment> treatments;
 
-    public Patient(String name, int id, String treatmentType) {
+    public Patient(String name, int age, String id) {
         this.name = name;
+        this.age = age;
         this.id = id;
-        this.treatmentType = treatmentType;
-        this.treatmentHistory = new ArrayList<>();
-        this.treatmentHistory.add(treatmentType); // first treatment
+        this.treatments = new ArrayList<>();
     }
 
-    public String getName() { return name; }
-    public int getId() { return id; }
-    public String getTreatmentType() { return treatmentType; }
-
-    public void addTreatment(String treatment) {
-        treatmentHistory.add(treatment);
-        this.treatmentType = treatment; // latest treatment
+    // Getter methods
+    public String getName() {
+        return name;
     }
 
-    public List<String> getTreatmentHistory() {
-        return treatmentHistory;
+    public int getAge() {
+        return age;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<Treatment> getTreatments() {
+        return treatments;
+    }
+
+    // Add treatment
+    public void addTreatment(Treatment treatment) {
+        treatments.add(treatment);
     }
 
     @Override
     public String toString() {
-        return String.format("Patient[ID:%d, Name:%s, Current Treatment:%s]", 
-                              id, name, treatmentType);
+        return "Patient ID: " + id + ", Name: " + name + ", Age: " + age;
     }
 }
