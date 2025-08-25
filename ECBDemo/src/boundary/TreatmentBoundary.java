@@ -1,46 +1,122 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package boundary;
 
-import control.TreatmentControl;
 import entity.Patient;
-
+import entity.Treatment;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class TreatmentBoundary {
-    public static void main(String[] args) {
-        TreatmentBoundary ui = new TreatmentBoundary();
-        ui.run();
-    }
+    private Scanner scanner = new Scanner(System.in);
 
-    private TreatmentControl control = new TreatmentControl();
-    private Scanner sc = new Scanner(System.in);
+    // store patients here
+    private List<Patient> patients = new ArrayList<>();
 
-    private void run() {
+    public void run() {
         int choice;
         do {
-            System.out.println("\n1.Register 2.Treat Next 3.Status 4.Exit");
-            choice = sc.nextInt(); sc.nextLine();
+            System.out.println("\n--- Treatment Management System ---");
+            System.out.println("1. Register Patient");
+            System.out.println("2. View Patients");
+            System.out.println("3. Add Diagnosis/Treatment");
+            System.out.println("4. View Treatment History");
+            System.out.println("5. Exit");
+            System.out.print("Enter choice: ");
+            choice = Integer.parseInt(scanner.nextLine());
+
             switch (choice) {
-                case 1 -> register();
-                case 2 -> control.treatNextPatient();
-                case 3 -> control.displayQueueStatus();
-                case 4 -> System.out.println("Exiting");
-                default -> System.out.println("Invalid");
+                case 1 -> registerPatient();
+                case 2 -> viewPatients();
+                case 3 -> addTreatment();
+                case 4 -> viewTreatmentHistory();
+                case 5 -> System.out.println("Exiting...");
+                default -> System.out.println("Invalid choice. Try again.");
             }
-        } while (choice != 4);
+        } while (choice != 5);
     }
 
-    private void register() {
-        System.out.print("Name: ");
-        String name = sc.nextLine();
-        System.out.print("ID: ");
-        int id = sc.nextInt(); sc.nextLine();
-        System.out.print("Treatment type: ");
-        String tt = sc.nextLine();
+    private void registerPatient() {
+        System.out.print("Enter Patient Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter Patient Age: ");
+        int age = Integer.parseInt(scanner.nextLine());
+        System.out.print("Enter Patient ID: ");
+        String id = scanner.nextLine();
 
-        control.registerPatient(new Patient(name, id, tt));
+        Patient patient = new Patient(name, age, id);
+        patients.add(patient);
+
+        System.out.println("Patient registered successfully.");
+    }
+
+    private void viewPatients() {
+        if (patients.isEmpty()) {
+            System.out.println("No patients registered.");
+            return;
+        }
+        System.out.println("\n--- Registered Patients ---");
+        for (Patient p : patients) {
+            System.out.println(p);
+        }
+    }
+
+    private void addTreatment() {
+        if (patients.isEmpty()) {
+            System.out.println("No patients found. Please register first.");
+            return;
+        }
+
+        System.out.print("Enter Patient ID to add treatment: ");
+        String id = scanner.nextLine();
+        Patient patient = findPatientById(id);
+
+        if (patient == null) {
+            System.out.println("Patient not found.");
+            return;
+        }
+
+        System.out.print("Enter Diagnosis: ");
+        String diagnosis = scanner.nextLine();
+        System.out.print("Enter Treatment Description: ");
+        String description = scanner.nextLine();
+
+        Treatment treatment = new Treatment(diagnosis, description);
+        patient.addTreatment(treatment);
+
+        System.out.println("Treatment added for " + patient.getName());
+    }
+
+    private void viewTreatmentHistory() {
+        if (patients.isEmpty()) {
+            System.out.println("No patients found.");
+            return;
+        }
+
+        System.out.print("Enter Patient ID to view history: ");
+        String id = scanner.nextLine();
+        Patient patient = findPatientById(id);
+
+        if (patient == null) {
+            System.out.println("Patient not found.");
+            return;
+        }
+
+        System.out.println("\n--- Treatment History for " + patient.getName() + " ---");
+        for (Treatment t : patient.getTreatments()) {
+            System.out.println(t);
+        }
+    }
+
+    private Patient findPatientById(String id) {
+        for (Patient p : patients) {
+            if (p.getId().equalsIgnoreCase(id)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        new TreatmentBoundary().run();
     }
 }
