@@ -92,7 +92,7 @@ public class PharmacyControl {
             System.out.print("Batch Number: ");
             batchNumber = scanner.nextLine();
             if (batchNumber.trim().isEmpty()) {
-                System.out.println("❌ Batch number cannot be empty!");
+                System.out.println("##Batch number cannot be empty!");
             } else {
                 break;
             }
@@ -291,7 +291,7 @@ public class PharmacyControl {
             return "No medicines available in inventory.";
         }
         
-        String outputStr = "\n------ ALL MEDICINES ------\n";
+        String outputStr = "\n------------------ ALL MEDICINES ------------------\n";
         outputStr += String.format("%-8s %-20s %-12s %-15s %-8s %-10s\n", 
                                  "ID", "Name", "Batch", "Category", "Stock", "Price");
         outputStr += "----------------------------------------------------------------------------\n";
@@ -332,7 +332,7 @@ public class PharmacyControl {
 
     public String getExpiringMedicines() {
         StringBuilder outputStr = new StringBuilder();
-        outputStr.append("\n------ EXPIRING SOON ALERT ------\n");
+        outputStr.append("\n------------ EXPIRING SOON ALERT ------------\n");
         outputStr.append(String.format("%-8s %-20s %-12s %-15s %-12s\n", 
                                     "ID", "Name", "Batch", "Expiry", "Days Left"));
         outputStr.append("------------------------------------------------------------\n");
@@ -358,7 +358,7 @@ public class PharmacyControl {
 
     public String getExpiredMedicines() {
         StringBuilder outputStr = new StringBuilder();
-        outputStr.append("\n------ EXPIRED MEDICINES ------\n");
+        outputStr.append("\n------------ EXPIRED MEDICINES ------------\n");
         outputStr.append(String.format("%-8s %-20s %-12s %-15s\n", 
                                     "ID", "Name", "Batch", "Expiry"));
         outputStr.append("-----------------------------------------------\n");
@@ -384,7 +384,7 @@ public class PharmacyControl {
 
     // 5. Reporting Functions
     public void generateInventoryReport() {
-        System.out.println("\n====== PHARMACY INVENTORY REPORT ======");
+        System.out.println("\n========= PHARMACY INVENTORY REPORT =========");
         System.out.println("Total Medicines: " + medicineList.getNumberOfEntries());
         System.out.printf("Total Inventory Value: RM%.2f\n", calculateTotalInventoryValue());
         System.out.println(getLowStockMedicines());
@@ -393,14 +393,14 @@ public class PharmacyControl {
     }
 
     public void generateSalesReport() {
-        System.out.println("\n====== SALES REPORT ======");
+        System.out.println("\n========= SALES REPORT =========");
         // This would typically connect to sales data
         System.out.println("Sales reporting feature - would show sales by medicine, time period, etc.");
         System.out.println("Total medicines dispensed today: " + getTodayDispensedCount());
     }
 
     public void generateCategoryReport() {
-        System.out.println("\n====== CATEGORY REPORT ======");
+        System.out.println("\n========= CATEGORY REPORT =========");
         System.out.println("Medicines by category:");
         
         int prescriptionCount = 0;
@@ -534,3 +534,4 @@ public void runPharmacyManagement() {
 
 
 }
+
