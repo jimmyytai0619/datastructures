@@ -332,7 +332,7 @@ public class PharmacyControl {
 
     public String getExpiringMedicines() {
         StringBuilder outputStr = new StringBuilder();
-        outputStr.append("\n--- EXPIRING SOON ALERT ---\n");
+        outputStr.append("\n------ EXPIRING SOON ALERT ------\n");
         outputStr.append(String.format("%-8s %-20s %-12s %-15s %-12s\n", 
                                     "ID", "Name", "Batch", "Expiry", "Days Left"));
         outputStr.append("------------------------------------------------------------\n");
@@ -358,7 +358,7 @@ public class PharmacyControl {
 
     public String getExpiredMedicines() {
         StringBuilder outputStr = new StringBuilder();
-        outputStr.append("\n--- EXPIRED MEDICINES ---\n");
+        outputStr.append("\n------ EXPIRED MEDICINES ------\n");
         outputStr.append(String.format("%-8s %-20s %-12s %-15s\n", 
                                     "ID", "Name", "Batch", "Expiry"));
         outputStr.append("-----------------------------------------------\n");
@@ -440,9 +440,9 @@ public class PharmacyControl {
         return;
     }
     
-    System.out.println("\n=== CURRENT MEDICINE IDs AND BATCH NUMBERS ===");
+    System.out.println("\n======== CURRENT MEDICINE IDs AND BATCH NUMBERS ========");
     System.out.println(String.format("%-8s %-20s %-12s", "ID", "Name", "Batch No."));
-    System.out.println("---------------------------------------------");
+    System.out.println("---------------------------------------------------------");
     
     for (int i = 1; i <= medicineList.getNumberOfEntries(); i++) {
         Medicine med = medicineList.getEntry(i);
@@ -452,17 +452,17 @@ public class PharmacyControl {
 }
 
 private void displayInputFormatGuide() {
-    System.out.println("\n=== INPUT FORMAT GUIDE ===");
-    System.out.println("Medicine ID: M001, M002, etc. (Unique identifier)");
-    System.out.println("Batch Number: BATCH001, LOT2024A, etc. (Manufacturer batch)");
-    System.out.println("Dosage: 500mg, 250mg/5ml, etc.");
-    System.out.println("Expiry Date: DD/MM/YYYY format (e.g., 31/12/2024)");
+    System.out.println("\n================== INPUT FORMAT GUIDE =================");
+    System.out.println("Medicine ID    : M001, M002, etc. (Unique identifier)");
+    System.out.println("Batch Number   : BATCH001, LOT2024A, etc. (Manufacturer batch)");
+    System.out.println("Dosage         : 500mg, 250mg/5ml, etc.");
+    System.out.println("Expiry Date    : DD/MM/YYYY format (e.g., 31/12/2024)");
     System.out.println("Production Date: DD/MM/YYYY format");
-    System.out.println("Category: Prescription or Non-prescription");
-    System.out.println("Purpose: Pain relief, Antibiotic, etc.");
-    System.out.println("Stock Quantity: Whole number (e.g., 100)");
-    System.out.println("Price: Decimal number (e.g., 12.50)");
-    System.out.println("==============================================");
+    System.out.println("Category       : Prescription or Non-prescription");
+    System.out.println("Purpose        : Pain relief, Antibiotic, etc.");
+    System.out.println("Stock Quantity : Whole number (e.g., 100)");
+    System.out.println("Price          : Decimal number (e.g., 12.50)");
+    System.out.println("========================================================");
 }
 
 private boolean isMedicineIdExists(String medicineId) {
@@ -531,5 +531,6 @@ public void runPharmacyManagement() {
         }
     } while (choice != 0);
 }
+
 
 }
