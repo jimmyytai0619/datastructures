@@ -102,10 +102,18 @@ public class TreatmentBoundary {
         }
 
         System.out.println("\n--- Treatment History for " + patient.getName() + " ---");
-        for (Treatment t : patient.getTreatments()) {
+
+        if (patient.getTreatments().getNumberOfEntries() == 0) {
+            System.out.println("No treatments recorded.");
+            return;
+        }
+
+        for (int i = 1; i <= patient.getTreatments().getNumberOfEntries(); i++) {
+            Treatment t = patient.getTreatments().getEntry(i);
             System.out.println(t);
         }
     }
+
 
     private Patient findPatientById(String id) {
         for (Patient p : patients) {

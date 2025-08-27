@@ -15,4 +15,5 @@ public interface QueueInterface<T> {
     T peek();
     int size();
     void clear();
+    T getFront();
 }

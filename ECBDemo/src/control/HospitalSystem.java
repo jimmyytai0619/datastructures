@@ -8,7 +8,7 @@ public class HospitalSystem {
     private QueueInterface<Patient> waitingQueue;
 
     public HospitalSystem() {
-        waitingQueue = new ArrayQueue<>();
+        waitingQueue = new ArrayQueue<>(100);
     }
 
     public void registerPatient(Patient p) {

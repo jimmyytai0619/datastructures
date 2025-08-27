@@ -1,13 +1,13 @@
 package entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import adt.ArrayList;
+import adt.ListInterface;
 
 public class Patient {
     private String name;
     private int age;
     private String id;
-    private List<Treatment> treatments;
+    private ListInterface<Treatment> treatments;
 
     public Patient(String name, int age, String id) {
         this.name = name;
@@ -16,30 +16,17 @@ public class Patient {
         this.treatments = new ArrayList<>();
     }
 
-    // Getter methods
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public int getAge() { return age; }
+    public String getId() { return id; }
+    public ListInterface<Treatment> getTreatments() { return treatments; }
 
-    public int getAge() {
-        return age;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public List<Treatment> getTreatments() {
-        return treatments;
-    }
-
-    // Add treatment
     public void addTreatment(Treatment treatment) {
         treatments.add(treatment);
     }
 
     @Override
     public String toString() {
-        return "Patient ID: " + id + ", Name: " + name + ", Age: " + age;
+        return String.format("ID: %s | Name: %s | Age: %d", id, name, age);
     }
 }

@@ -49,7 +49,17 @@ public class ArrayQueue<T> implements QueueInterface<T> {
     public int size() {
         return count;
     }
+    
+    @Override
+    public T getFront() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Queue is empty");
+        }
+        return queue[front];
+    }
 
+
+    
     public void clear() {
         front = 0;
         rear = -1;
