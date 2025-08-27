@@ -1,11 +1,5 @@
 package boundary;
 
-/**
- * Author: JUN
- * Console boundary for Doctor Management (actors interact only with this).
- * Demonstrates CRUD, schedule assignment, and reports.
- */
-
 import control.DoctorControl;
 import control.DoctorReportGenerator;
 import entity.Doctor;
@@ -166,3 +160,4 @@ public class DoctorBoundary {
         new DoctorBoundary().start();
     }
 }
+
