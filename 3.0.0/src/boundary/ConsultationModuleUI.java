@@ -6,7 +6,6 @@ import entity.Appointment;
 import entity.Consultation;
 import entity.Doctor;
 import entity.Patient;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -180,6 +179,7 @@ public class ConsultationModuleUI {
         }
     }
 
+     
     private LocalTime readTime(String prompt) {
         while (true) {
             try {
@@ -191,4 +191,10 @@ public class ConsultationModuleUI {
             }
         }
     }
+    
+    
 }
+
+ 
+
+ 
