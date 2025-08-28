@@ -132,6 +132,35 @@ public class ConsultationModuleController {
         return null;
     }
 
+     //find doctor by ID
+    public Doctor findDoctor(String id) {
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor d = doctors.getEntry(i);
+            if (d.getDoctorId().equals(id)) return d;
+        }
+        return null;
+    }
+
+    //remove doctor by ID
+    public boolean removeDoctor(String id) {
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor d = doctors.getEntry(i);
+            if (d.getDoctorId().equals(id)) {
+                doctors.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean updateDoctor(String id, String newName, String newSpec) {
+    Doctor d = findDoctorById(id);
+    if (d == null) return false;
+    if (newName != null && !newName.isBlank()) d.setName(newName);
+    if (newSpec != null && !newSpec.isBlank()) d.setSpecialization(newSpec);
+    return true;
+}
+    
     // ---------- Getters for UI/Reports ----------
     public ListInterface<Patient> getPatients() { return patients; }
     public ListInterface<Doctor> getDoctors() { return doctors; }
