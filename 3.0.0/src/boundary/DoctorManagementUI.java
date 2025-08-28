@@ -1,6 +1,7 @@
 package boundary;
 
 import control.ConsultationModuleController;
+import control.ReportController;
 import entity.Doctor;
 
 import java.time.DayOfWeek;
@@ -10,9 +11,11 @@ import java.util.Scanner;
 public class DoctorManagementUI {
     private final ConsultationModuleController controller;
     private final Scanner scanner = new Scanner(System.in);
+    private final ReportController reportGen;
 
     public DoctorManagementUI(ConsultationModuleController controller) {
         this.controller = controller;
+        this.reportGen = new ReportController(controller);
     }
 
     public void run() {
@@ -22,8 +25,11 @@ public class DoctorManagementUI {
             System.out.println("1. Add Doctor");
             System.out.println("2. View Doctors");
             System.out.println("3. Add Duty Slot");
-            System.out.println("4. View Doctor Schedule");
-            System.out.println("5. Back");
+            System.out.println("4. Update Doctor");
+            System.out.println("5. Remove Doctor");
+            System.out.println("6. View Doctor Schedule");
+            System.out.println("7. View Doctors Report");
+            System.out.println("8. Back");
             System.out.print("Enter choice: ");
             choice = readInt();
 
@@ -31,11 +37,14 @@ public class DoctorManagementUI {
                 case 1 -> addDoctor();
                 case 2 -> viewDoctors();
                 case 3 -> addDutySlot();
-                case 4 -> viewSchedule();
-                case 5 -> System.out.println("Returning...");
+                case 4 -> updateDoctor();
+                case 5 -> removeDoctor();
+                case 6 -> viewSchedule();
+                case 7 -> reports();
+                case 8 -> System.out.println("Returning...");
                 default -> System.out.println("Invalid choice.");
             }
-        } while (choice != 5);
+        } while (choice != 8);
     }
 
     private void addDoctor() {
@@ -97,10 +106,65 @@ public class DoctorManagementUI {
         System.out.println(ok ? "Duty slot added." : "Failed (check doctor ID or time range).");
     }
 
+    private void updateDoctor() {
+        System.out.print("Doctor ID to update: ");
+        String id = scanner.nextLine().trim();
+        Doctor d = controller.findDoctorById(id);
+        if (d == null) {
+            System.out.println("Doctor not found.");
+            return;
+        }
+
+        System.out.print("New name (leave blank to keep \"" + d.getName() + "\"): ");
+        String name = scanner.nextLine().trim();
+        System.out.print("New specialization (leave blank to keep \"" + d.getSpecialization() + "\"): ");
+        String spec = scanner.nextLine().trim();
+
+        boolean updated = controller.updateDoctor(id, name, spec);
+        System.out.println(updated ? "Doctor updated." : "Update failed.");
+    }
+
+    private void removeDoctor() {
+        System.out.print("Doctor ID to remove: ");
+        String id = scanner.nextLine().trim();
+        boolean ok = controller.removeDoctor(id);
+        System.out.println(ok ? "Doctor removed." : "Doctor not found.");
+    }
+
     private void viewSchedule() {
         System.out.print("Doctor ID: ");
         String id = scanner.nextLine().trim();
         System.out.println(controller.showSchedule(id));
+    }
+
+    private void reports() {
+        System.out.println("\n=== Doctor Reports ===");
+        System.out.println("1. Monthly Duty Roster");
+        System.out.println("2. Availability Summary (next N days)");
+        System.out.println("3. Utilization Report (last N days)");
+        System.out.print("Choose: ");
+        int c = readInt();
+
+        switch (c) {
+            case 1 -> {
+                System.out.print("Month (1-12): ");
+                int m = readInt();
+                System.out.print("Year: ");
+                int y = readInt();
+                System.out.println(reportGen.monthlyDutyRoster(m, y));
+            }
+            case 2 -> {
+                System.out.print("Look ahead days: ");
+                int n = readInt();
+                System.out.println(reportGen.availabilitySummary(n));
+            }
+            case 3 -> {
+                System.out.print("Look back days: ");
+                int n = readInt();
+                System.out.println(reportGen.utilizationReport(n));
+            }
+            default -> System.out.println("Invalid choice.");
+        }
     }
 
     private int readInt() {
