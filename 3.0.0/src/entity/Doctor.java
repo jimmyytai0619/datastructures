@@ -17,11 +17,21 @@ public class Doctor implements Serializable {
         this.specialization = specialization;
     }
 
-    public String getDoctorId()     { return doctorId; }
-    public String getName()         { return name; }
-    public String getSpecialization(){ return specialization; }
+    // Getters
+    public String getDoctorId() { return doctorId; }
+    public String getName() { return name; }
+    public String getSpecialization() { return specialization; }
 
+    // Setters 
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
+
+    // Duty schedule management
     public void addDutySlot(DutySlot slot) {
         schedule.add(slot);
     }
@@ -38,9 +48,12 @@ public class Doctor implements Serializable {
         return schedule;
     }
 
-    public int getScheduleLength() { return getScheduleNumberOfEntries(); }
+    public int getScheduleLength() {
+        return getScheduleNumberOfEntries();
+    }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return doctorId + " - " + name + " (" + specialization + ")";
     }
 }
