@@ -7,27 +7,32 @@ import entity.Doctor;
 import entity.Appointment;
 import entity.Consultation;
 import entity.DutySlot;
+
 import java.time.LocalDateTime;
 
 /**
- * ConsultationModule controller
- * 
- * @author yizhe
+ * Unified controller for Consultation + shared doctor/patient data.
+ * All collections use ListInterface/ArrayList (1-based).
  */
 public class ConsultationModuleController {
-
 
     private final ListInterface<Patient> patients = new ArrayList<>();
     private final ListInterface<Doctor> doctors = new ArrayList<>();
     private final ListInterface<Appointment> appointments = new ArrayList<>();
     private final ListInterface<Consultation> consultations = new ArrayList<>();
 
-    // ---------- CRUD / Register ----------
-    public Patient registerPatient(String id, String name, String phone, String email) {
+    // ---------- Register / CRUD ----------
+    // Preferred: with age
+    public Patient registerPatient(String id, String name, int age, String phone, String email) {
         if (findPatientById(id) != null) return null;
-        Patient p = new Patient(id, name, phone, email);
+        Patient p = new Patient(id, name, age, phone, email);
         patients.add(p);
         return p;
+    }
+
+    // Back-compat overload (no age) — falls back to age=0
+    public Patient registerPatient(String id, String name, String phone, String email) {
+        return registerPatient(id, name, 0, phone, email);
     }
 
     public Doctor registerDoctor(String id, String name, String specialization) {
@@ -103,7 +108,7 @@ public class ConsultationModuleController {
     public Patient findPatientById(String id) {
         for (int i = 1; i <= patients.getNumberOfEntries(); i++) {
             Patient p = patients.getEntry(i);
-            if (p.getId().equalsIgnoreCase(id) || p.getPatientId().equalsIgnoreCase(id)) return p;
+            if (p.getId().equalsIgnoreCase(id)) return p;
         }
         return null;
     }
@@ -132,35 +137,6 @@ public class ConsultationModuleController {
         return null;
     }
 
-     //find doctor by ID
-    public Doctor findDoctor(String id) {
-        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
-            Doctor d = doctors.getEntry(i);
-            if (d.getDoctorId().equals(id)) return d;
-        }
-        return null;
-    }
-
-    //remove doctor by ID
-    public boolean removeDoctor(String id) {
-        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
-            Doctor d = doctors.getEntry(i);
-            if (d.getDoctorId().equals(id)) {
-                doctors.remove(i);
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public boolean updateDoctor(String id, String newName, String newSpec) {
-    Doctor d = findDoctorById(id);
-    if (d == null) return false;
-    if (newName != null && !newName.isBlank()) d.setName(newName);
-    if (newSpec != null && !newSpec.isBlank()) d.setSpecialization(newSpec);
-    return true;
-}
-    
     // ---------- Getters for UI/Reports ----------
     public ListInterface<Patient> getPatients() { return patients; }
     public ListInterface<Doctor> getDoctors() { return doctors; }
