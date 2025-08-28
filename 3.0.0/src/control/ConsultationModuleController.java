@@ -7,12 +7,16 @@ import entity.Doctor;
 import entity.Appointment;
 import entity.Consultation;
 import entity.DutySlot;
-
 import java.time.LocalDateTime;
 
+/**
+ * ConsultationModule controller
+ * 
+ * @author yizhe
+ */
 public class ConsultationModuleController {
 
-    // 统一：全部用 ListInterface/ArrayList（1-based）
+
     private final ListInterface<Patient> patients = new ArrayList<>();
     private final ListInterface<Doctor> doctors = new ArrayList<>();
     private final ListInterface<Appointment> appointments = new ArrayList<>();
