@@ -42,9 +42,10 @@ public class ClinicManagementSystem {
 
     public void start() {
         while (true) {
-        System.out.println("========================================");
-        System.out.println("        CLINIC MANAGEMENT SYSTEM        ");
-        System.out.println("========================================");
+    System.out.println("========================================");
+    System.out.println("        CLINIC MANAGEMENT SYSTEM        ");
+    System.out.println("        TAR UMT On-Campus Clinic        ");
+    System.out.println("========================================");
 
             showMainMenu();
             int c = readInt();
@@ -66,7 +67,11 @@ public class ClinicManagementSystem {
         System.out.println("[3] Treatment Management");
         System.out.println("[4] Consultation Management");
         System.out.println("[5] Doctor Management");
+            
+        System.out.println("----------------------------------------");
         System.out.println("[0] Exit");
+        System.out.println("========================================");
+    
         System.out.print("Choose: ");
     }
 
