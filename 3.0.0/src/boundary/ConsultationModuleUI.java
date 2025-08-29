@@ -25,7 +25,7 @@ public class ConsultationModuleUI {
     public void run() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n=== Consultation Management (Module 3) ===");
+            System.out.println("\n=== Consultation Management ===");
             System.out.println("1. Create Appointment");
             System.out.println("2. Conduct Consultation");
             System.out.println("3. Schedule Follow-up Appointment");
