@@ -93,6 +93,32 @@ public class ConsultationModuleController {
         }
         return sb.toString();
     }
+    public boolean updateDoctor(String doctorId, String newName, String newSpec) {
+        Doctor doctor = findDoctorById(doctorId);
+        if (doctor == null) {
+            return false; 
+        }
+        if (newName != null && !newName.isBlank()) {
+            doctor.setName(newName);
+        }
+        if (newSpec != null && !newSpec.isBlank()) {
+            doctor.setSpecialization(newSpec);
+        }
+        return true;
+    }
+    
+    public boolean removeDoctor(String doctorId) {
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor doctor = doctors.getEntry(i);
+            if (doctor.getDoctorId().equalsIgnoreCase(doctorId)) {
+                doctors.remove(i);
+                return true; 
+            }
+        }
+        return false;
+    }
+
+
 
     public String showSchedule(String doctorId) {
         Doctor d = findDoctorById(doctorId);
