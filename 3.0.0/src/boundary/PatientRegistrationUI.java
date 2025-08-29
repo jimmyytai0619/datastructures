@@ -65,6 +65,7 @@ public class PatientRegistrationUI {
 
     PatientRecord newPatient = new PatientRecord(
             name,
+            id,
             age,
             treatmentType,
             medicalHistory,
