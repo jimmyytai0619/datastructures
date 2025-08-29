@@ -92,7 +92,7 @@ public class PatientRegistrationUI {
 
     private void showReports() {
         System.out.println("\n=== SUMMARY REPORTS ===");
-        System.out.println("Total Registered Patients: " + recordsControl.getTotalPatients());
-        recordsControl.displayTreatmentCountPerPatient();
+        recordsControl.generateTotalPatientsReport();
+        recordsControl.generateAgeGroupDistributionReport();
     }
 }

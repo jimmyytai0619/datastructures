@@ -1,28 +1,55 @@
 package control;
 
-import adt.ArrayList;
-import adt.ListInterface;
 import entity.Patient;
+import entity.Treatment;
+import adt.ListInterface;
 
 public class TreatmentControl {
 
-    private final ListInterface<Patient> queue = new ArrayList<>();
-
-    public void registerPatient(Patient p) {
-        queue.add(p);
-        System.out.println(p.getName() + " registered.");
+    public void addTreatmentToPatient(Patient patient, Treatment treatment) {
+        patient.addTreatment(treatment);
     }
 
-    public void treatNextPatient() {
-        if (queue.getNumberOfEntries() == 0) {
-            System.out.println("No patients waiting.");
-        } else {
-            Patient next = queue.remove(1); 
-            System.out.println("Treating: " + next);
+    public ListInterface<Treatment> getTreatmentHistory(Patient patient) {
+        return patient.getTreatments();
+    }
+
+public void generateTreatmentCountReport(ListInterface<? extends Patient> patientList){
+    System.out.println("\n=== Patient Treatment Count Report ===");
+    System.out.printf("%-10s %-20s %-15s\n", "Patient ID", "Patient Name", "Total Treatments");
+    System.out.println("------------------------------------------------------");
+
+    for (int i = 1; i <= patientList.getNumberOfEntries(); i++) {
+        Patient p = patientList.getEntry(i);
+        int count = p.getTreatments().getNumberOfEntries();
+        System.out.printf("%-10s %-20s %-15d\n", p.getId(), p.getName(), count);
+    }
+
+    System.out.println("------------------------------------------------------");
+    System.out.println("Total Patients: " + patientList.getNumberOfEntries());
+}
+
+public void generateTreatmentCoverageReport(ListInterface<? extends Patient> patientList){
+    System.out.println("\n=== Treatment Coverage Report ===");
+    int treated = 0;
+
+    for (int i = 1; i <= patientList.getNumberOfEntries(); i++) {
+        Patient p = patientList.getEntry(i);
+        if (p.getTreatments().getNumberOfEntries() > 0) {
+            treated++;
         }
     }
 
-    public void displayQueueStatus() {
-        System.out.println("Patients waiting: " + queue.getNumberOfEntries());
-    }
+    int totalPatients = patientList.getNumberOfEntries();
+    int untreated = totalPatients - treated;
+
+    System.out.println("Total Patients          : " + totalPatients);
+    System.out.println("Patients with Treatments: " + treated);
+    System.out.println("Patients without Treatments: " + untreated);
+
+    double coverage = totalPatients == 0 ? 0 : ((double) treated / totalPatients) * 100;
+    System.out.printf("Treatment Coverage Rate : %.2f%%\n", coverage);
+}
+
+
 }

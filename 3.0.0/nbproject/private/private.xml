@@ -3,7 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/User/Desktop/RSW/BMCS2063%20Data%20Structure%20&amp;%20Algorithms/2.0.2%20-%20Copy/src/ClinicManagementSystem.java</file>
+            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/control/PatientRegistrationControl.java</file>
+            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/boundary/PatientRecordsUI.java</file>
+            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/entity/Patient.java</file>
+            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/boundary/PatientRegistrationUI.java</file>
+            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/control/PatientRecordsControl.java</file>
+            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/ClinicManagementSystem.java</file>
+            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/entity/PatientRecord.java</file>
         </group>
     </open-files>
 </project-private>

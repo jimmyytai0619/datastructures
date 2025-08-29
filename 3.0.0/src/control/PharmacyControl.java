@@ -44,7 +44,7 @@ public class PharmacyControl {
 
     // 1. Medicine Management
     public void addNewMedicine() {
-        // 先显示当前药品ID和批号
+       
         displayCurrentMedicineIds();
         displayInputFormatGuide();
 
@@ -55,7 +55,7 @@ public class PharmacyControl {
             medicineId = inputMedicineId();
             if (isMedicineIdExists(medicineId)) {
                 System.out.println("##Medicine ID already exists! Please choose a different ID.");
-                displayCurrentMedicineIds(); // 再次显示当前ID
+                displayCurrentMedicineIds(); // 
             } else {
                 break;
             }
