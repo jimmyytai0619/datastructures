@@ -32,12 +32,29 @@ public class DoctorDirectory {
         return null;
     }
 
- 
     public boolean addDutySlot(String doctorId, DayOfWeek day, LocalTime start, LocalTime end) {
         Doctor d = findById(doctorId);
         if (d == null || !start.isBefore(end)) return false;
         d.addDutySlot(new DutySlot(day, start, end));
         return true;
+    }
+
+    public boolean update(String id, String name, String spec) {
+        Doctor d = findById(id);
+        if (d == null) return false;
+        if (name != null && !name.isEmpty()) d.setName(name);
+        if (spec != null && !spec.isEmpty()) d.setSpecialization(spec);
+        return true;
+    }
+
+    public boolean remove(String id) {
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            if (doctors.getEntry(i).getDoctorId().equalsIgnoreCase(id)) {
+                doctors.remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     public ListInterface<Doctor> all() { return doctors; }
