@@ -124,6 +124,13 @@ public class ConsultationModuleController {
         }
         return null;
     }
+public boolean updateDoctor(String id, String name, String specialization) {
+    return doctorDir.update(id, name, specialization);
+}
+
+public boolean removeDoctor(String id) {
+    return doctorDir.remove(id);
+}
 
     public ListInterface<Appointment> getAppointments() { return appointments; }
 
