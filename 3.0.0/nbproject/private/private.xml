@@ -2,13 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/control/PatientRegistrationControl.java</file>
-            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/boundary/PatientRecordsUI.java</file>
-            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/entity/Patient.java</file>
-            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/boundary/PatientRegistrationUI.java</file>
-            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/control/PatientRecordsControl.java</file>
-            <file>file:/C:/Users/tianh/Documents/NetBeansProjects/3.0.0/src/ClinicManagementSystem.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

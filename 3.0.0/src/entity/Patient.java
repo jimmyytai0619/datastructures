@@ -18,7 +18,7 @@ public class Patient implements Serializable {
 
     // Treatment history (used by Treatment module)
     private final ListInterface<Treatment> treatments = new ArrayList<>();
- 
+
     public Patient() {}
 
     // Old-style ctor kept for compatibility if some legacy code uses it
