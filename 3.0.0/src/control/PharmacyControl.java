@@ -46,8 +46,6 @@ public class PharmacyControl {
     public void addNewMedicine() {
        
         displayCurrentMedicineIds();
-        displayInputFormatGuide();
-
         System.out.println("\n------ ADD NEW MEDICINE ------");
 
         String medicineId;
@@ -451,87 +449,19 @@ public class PharmacyControl {
     }
 }
 
-private void displayInputFormatGuide() {
-    System.out.println("\n================== INPUT FORMAT GUIDE =================");
-    System.out.println("Medicine ID    : M001, M002, etc. (Unique identifier)");
-    System.out.println("Batch Number   : BATCH001, LOT2024A, etc. (Manufacturer batch)");
-    System.out.println("Dosage         : 500mg, 250mg/5ml, etc.");
-    System.out.println("Expiry Date    : DD/MM/YYYY format (e.g., 31/12/2024)");
-    System.out.println("Production Date: DD/MM/YYYY format");
-    System.out.println("Category       : Prescription or Non-prescription");
-    System.out.println("Purpose        : Pain relief, Antibiotic, etc.");
-    System.out.println("Stock Quantity : Whole number (e.g., 100)");
-    System.out.println("Price          : Decimal number (e.g., 12.50)");
-    System.out.println("========================================================");
-}
-
-private boolean isMedicineIdExists(String medicineId) {
-    return findMedicineById(medicineId) != null;
-}
-
-private boolean isBatchNumberExists(String batchNumber) {
-    for (int i = 1; i <= medicineList.getNumberOfEntries(); i++) {
-        Medicine med = medicineList.getEntry(i);
-        if (med.getBatchNumber().equalsIgnoreCase(batchNumber)) {
-            return true;
-        }
+    private boolean isMedicineIdExists(String medicineId) {
+        return findMedicineById(medicineId) != null;
     }
-    return false;
-}
 
-
-    // 6. Main menu method
-public void runPharmacyManagement() {
-    int choice = 0;
-    do {
-        System.out.println("\n======================================");
-        System.out.println("        PHARMACY MANAGEMENT SYSTEM    ");
-        System.out.println("======================================");
-        
-        System.out.println("[1]  Add New Medicine");
-        System.out.println("[2]  Update Medicine Details");
-        System.out.println("[3]  Update Stock");
-        System.out.println("[4]  Dispense Medicine");
-        System.out.println("[5]  Search Medicine");
-        System.out.println("[6]  View All Medicines");
-        
-        System.out.println("--------------------------------------");
-        System.out.println("[7]  Low Stock Alert");
-        System.out.println("[8]  Expiring Soon Alert");
-        System.out.println("[9]  Expired Medicines");
-        
-        System.out.println("--------------------------------------");
-        System.out.println("[10] Inventory Report");
-        System.out.println("[11] Sales Report");
-        System.out.println("[12] Category Report");
-        
-        System.out.println("======================================");
-        System.out.println("[0]  Exit");
-        System.out.println("======================================");
-        
-        System.out.print("Enter your choice: ");
-        choice = scanner.nextInt();
-        scanner.nextLine(); // consume newline
-        
-        switch (choice) {
-            case 1 -> addNewMedicine();
-            case 2 -> updateMedicine();
-            case 3 -> updateStock();
-            case 4 -> dispenseMedicine();
-            case 5 -> searchMedicine();
-            case 6 -> System.out.println(getAllMedicines());
-            case 7 -> System.out.println(getLowStockMedicines());
-            case 8 -> System.out.println(getExpiringMedicines());
-            case 9 -> System.out.println(getExpiredMedicines());
-            case 10 -> generateInventoryReport();
-            case 11 -> generateSalesReport();
-            case 12 -> generateCategoryReport();
-            case 0 -> MessageUI.displayExitMessage();
-            default -> MessageUI.displayInvalidChoiceMessage("Invalid choice! Please enter 0-12.");
+    private boolean isBatchNumberExists(String batchNumber) {
+        for (int i = 1; i <= medicineList.getNumberOfEntries(); i++) {
+            Medicine med = medicineList.getEntry(i);
+            if (med.getBatchNumber().equalsIgnoreCase(batchNumber)) {
+                return true;
+            }
         }
-    } while (choice != 0);
-}
-
+        return false;
+    }
 
 }
 
