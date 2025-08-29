@@ -11,19 +11,22 @@ import java.time.LocalTime;
 public class DoctorDirectory {
     private final ListInterface<Doctor> doctors = new ArrayList<>();
 
+    // Add an existing Doctor object
     public boolean add(Doctor d) {
         if (findById(d.getDoctorId()) != null) return false;
         doctors.add(d);
         return true;
     }
 
+    // Register a new doctor
     public Doctor register(String id, String name, String specialization) {
-        if (findById(id) != null) return null;
+        if (findById(id) != null) return null; // prevent duplicate
         Doctor d = new Doctor(id, name, specialization);
         doctors.add(d);
         return d;
     }
 
+    // Find doctor by ID
     public Doctor findById(String id) {
         for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
             Doctor d = doctors.getEntry(i);
@@ -32,6 +35,7 @@ public class DoctorDirectory {
         return null;
     }
 
+    // Add a duty slot to a doctor
     public boolean addDutySlot(String doctorId, DayOfWeek day, LocalTime start, LocalTime end) {
         Doctor d = findById(doctorId);
         if (d == null || !start.isBefore(end)) return false;
@@ -39,14 +43,16 @@ public class DoctorDirectory {
         return true;
     }
 
+    // Update doctor info
     public boolean update(String id, String name, String spec) {
         Doctor d = findById(id);
         if (d == null) return false;
-        if (name != null && !name.isEmpty()) d.setName(name);
-        if (spec != null && !spec.isEmpty()) d.setSpecialization(spec);
+        if (name != null && !name.isBlank()) d.setName(name);
+        if (spec != null && !spec.isBlank()) d.setSpecialization(spec);
         return true;
     }
 
+    // Remove doctor by ID
     public boolean remove(String id) {
         for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
             if (doctors.getEntry(i).getDoctorId().equalsIgnoreCase(id)) {
@@ -57,7 +63,19 @@ public class DoctorDirectory {
         return false;
     }
 
-    public ListInterface<Doctor> all() { return doctors; }
-    public int size() { return doctors.getNumberOfEntries(); }
-    public boolean isEmpty() { return size() == 0; }
+    // Get all doctors
+    public ListInterface<Doctor> all() {
+        return doctors;
+    }
+
+    // Helpers
+    public int size() {
+        return doctors.getNumberOfEntries();
+    }
+
+    public boolean isEmpty() {
+        return size() == 0;
+    }
 }
+
+
