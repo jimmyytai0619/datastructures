@@ -1,6 +1,6 @@
 package boundary;
 
-import control.ConsultationModuleController;
+import control.DoctorController;
 import control.ReportController;
 import entity.Doctor;
 
@@ -9,13 +9,13 @@ import java.time.LocalTime;
 import java.util.Scanner;
 
 public class DoctorManagementUI {
-    private final ConsultationModuleController controller;
+    private final DoctorController doctorController;   // use DoctorController
     private final Scanner scanner = new Scanner(System.in);
     private final ReportController reportGen;
 
-    public DoctorManagementUI(ConsultationModuleController controller) {
-        this.controller = controller;
-        this.reportGen = new ReportController(controller);
+    public DoctorManagementUI(DoctorController doctorController, ReportController reportGen) {
+        this.doctorController = doctorController;
+        this.reportGen = reportGen;
     }
 
     public void run() {
@@ -54,12 +54,12 @@ public class DoctorManagementUI {
         String name = scanner.nextLine().trim();
         System.out.print("Specialization: ");
         String spec = scanner.nextLine().trim();
-        Doctor d = controller.registerDoctor(id, name, spec);
+        Doctor d = doctorController.registerDoctor(id, name, spec);
         System.out.println(d == null ? "Duplicate doctor ID." : "Doctor added: " + id);
     }
 
     private void viewDoctors() {
-        var list = controller.getDoctors();
+        var list = doctorController.getDoctors();
         if (list.getNumberOfEntries() == 0) {
             System.out.println("(no doctors)");
             return;
@@ -100,14 +100,14 @@ public class DoctorManagementUI {
             System.out.println("Invalid time.");
             return;
         }
-        boolean ok = controller.addDutySlot(id, day, start, end);
+        boolean ok = doctorController.addDutySlot(id, day, start, end);
         System.out.println(ok ? "Duty slot added." : "Failed (check doctor ID or time range).");
     }
 
     private void updateDoctor() {
         System.out.print("Doctor ID to update: ");
         String id = scanner.nextLine().trim();
-        Doctor d = controller.findDoctorById(id);
+        Doctor d = doctorController.findDoctorById(id);
         if (d == null) {
             System.out.println("Doctor not found.");
             return;
@@ -116,21 +116,21 @@ public class DoctorManagementUI {
         String name = scanner.nextLine().trim();
         System.out.print("New specialization (leave blank to keep \"" + d.getSpecialization() + "\"): ");
         String spec = scanner.nextLine().trim();
-        boolean updated = controller.updateDoctor(id, name, spec);
+        boolean updated = doctorController.updateDoctor(id, name, spec);
         System.out.println(updated ? "Doctor updated." : "Update failed.");
     }
 
     private void removeDoctor() {
         System.out.print("Doctor ID to remove: ");
         String id = scanner.nextLine().trim();
-        boolean ok = controller.removeDoctor(id);
+        boolean ok = doctorController.removeDoctor(id);
         System.out.println(ok ? "Doctor removed." : "Doctor not found.");
     }
 
     private void viewSchedule() {
         System.out.print("Doctor ID: ");
         String id = scanner.nextLine().trim();
-        System.out.println(controller.showSchedule(id));
+        System.out.println(doctorController.showSchedule(id));
     }
 
     private void reports() {
