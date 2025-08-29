@@ -3,37 +3,43 @@ import control.*;
 
 import java.util.Scanner;
 
-
-
 public class ClinicManagementSystem {
- 
-    private final PatientDirectory patientDir;
-    private final DoctorDirectory  doctorDir;
 
-  
+    private final PatientDirectory patientDir;
+    private final DoctorDirectory doctorDir;
+
+    private final DoctorController doctorController;          
     private final ConsultationModuleController consultationController;
     private final ReportController reportController;
 
     private final PatientRegistrationUI patientUI;
-    private final DoctorManagementUI    doctorUI;
-    private final ConsultationModuleUI  consultationUI;
+    private final DoctorManagementUI doctorUI;
+    private final ConsultationModuleUI consultationUI;
     private final PharmacyUI pharmacyUI;
     private final TreatmentBoundary treatmentUI;
 
     private final Scanner scanner = new Scanner(System.in);
 
     public ClinicManagementSystem() {
-    
         patientDir = new PatientDirectory();
-        doctorDir  = new DoctorDirectory();
+        doctorDir = new DoctorDirectory();
 
+        //doctorController wraps doctorDir
+        doctorController = new DoctorController(doctorDir);
+
+        // consultation still needs both patientDir & doctorDir
         consultationController = new ConsultationModuleController(patientDir, doctorDir);
+
+        // reports use consultation data
         reportController = new ReportController(consultationController);
 
+        // Patient UI directly with patientDir
         patientUI = new PatientRegistrationUI(patientDir);
 
-        doctorUI = new DoctorManagementUI(consultationController);
+        // ✅ FIX: DoctorManagementUI now uses doctorController + reportController
+        doctorUI = new DoctorManagementUI(doctorController, reportController);
 
+        // consultation UI stays same
         consultationUI = new ConsultationModuleUI(consultationController);
 
         pharmacyUI = new PharmacyUI();
@@ -42,21 +48,21 @@ public class ClinicManagementSystem {
 
     public void start() {
         while (true) {
-    System.out.println("========================================");
-    System.out.println("        CLINIC MANAGEMENT SYSTEM        ");
-    System.out.println("        TAR UMT On-Campus Clinic        ");
-    System.out.println("========================================");
+            System.out.println("========================================");
+            System.out.println("        CLINIC MANAGEMENT SYSTEM        ");
+            System.out.println("        TAR UMT On-Campus Clinic        ");
+            System.out.println("========================================");
 
             showMainMenu();
             int c = readInt();
             switch (c) {
-                case 1 -> patientUI.showMenu();                 
-                case 2 -> pharmacyUI.runPharmacyManagement();   
-                case 3 -> treatmentUI.run();                   
-                case 4 -> consultationUI.run();                
-                case 5 -> doctorUI.run();                       
+                case 1 -> patientUI.showMenu();
+                case 2 -> pharmacyUI.runPharmacyManagement();
+                case 3 -> treatmentUI.run();
+                case 4 -> consultationUI.run();
+                case 5 -> doctorUI.run();
                 case 0 -> { System.out.println("Bye!"); return; }
-                default -> System.out.println("Invalid choice 0–6.");
+                default -> System.out.println("Invalid choice 0–5.");
             }
         }
     }
@@ -67,11 +73,9 @@ public class ClinicManagementSystem {
         System.out.println("[3] Treatment Management");
         System.out.println("[4] Consultation Management");
         System.out.println("[5] Doctor Management");
-            
         System.out.println("----------------------------------------");
         System.out.println("[0] Exit");
         System.out.println("========================================");
-    
         System.out.print("Choose: ");
     }
 
@@ -79,7 +83,6 @@ public class ClinicManagementSystem {
         try { return Integer.parseInt(scanner.nextLine().trim()); }
         catch (Exception e) { return -1; }
     }
-
 
     public static void main(String[] args) {
         new ClinicManagementSystem().start();
