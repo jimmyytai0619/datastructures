@@ -54,7 +54,6 @@ public class ClinicManagementSystem {
                 case 3 -> treatmentUI.run();                   
                 case 4 -> consultationUI.run();                
                 case 5 -> doctorUI.run();                       
-                case 6 -> showSystemReport();                  
                 case 0 -> { System.out.println("Bye!"); return; }
                 default -> System.out.println("Invalid choice 0–6.");
             }
@@ -67,7 +66,6 @@ public class ClinicManagementSystem {
         System.out.println("[3] Treatment Management");
         System.out.println("[4] Consultation Management");
         System.out.println("[5] Doctor Management");
-        System.out.println("[6] System Reports");
         System.out.println("[0] Exit");
         System.out.print("Choose: ");
     }
@@ -77,10 +75,6 @@ public class ClinicManagementSystem {
         catch (Exception e) { return -1; }
     }
 
-    private void showSystemReport() {
-        System.out.println(reportController.generateConsultationsPerDoctorReport());
-        System.out.println(reportController.generateUpcomingAppointmentsPerPatientReport());
-    }
 
     public static void main(String[] args) {
         new ClinicManagementSystem().start();
