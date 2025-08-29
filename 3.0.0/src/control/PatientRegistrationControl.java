@@ -1,98 +1,58 @@
-package boundary;
+package control;
 
-import control.PatientRegistrationControl;
-import control.PatientRecordsControl;
+import adt.ListInterface;
+import adt.ArrayList;
+import dao.PatientDAO;
 import entity.PatientRecord;
-import java.util.Scanner;
 
-public class PatientRegistrationUI {
-    private final PatientRegistrationControl control;
-    private final PatientRecordsControl recordsControl;
-    private final Scanner scanner;
-
-    public PatientRegistrationUI() {
-        this.control = new PatientRegistrationControl();
-        this.recordsControl = new PatientRecordsControl();
-        this.scanner = new Scanner(System.in);
+    public class PatientRegistrationControl {
+        private ListInterface<PatientRecord> patientRecords;
+        private final PatientDAO patientDAO;
+    public ListInterface<PatientRecord> getAllPatients() {
+        return patientRecords; 
     }
 
-    public void showMenu() {
-        int choice;
-        do {
-            System.out.println("\n=== PATIENT MANAGEMENT ===");
-            System.out.println("1. Register New Patient");
-            System.out.println("2. View All Patients");
-            System.out.println("3. Search Patient by ID");
-            System.out.println("4. Show Reports");
-            System.out.println("5. Back to Main Menu");
-            System.out.print("Enter your choice: ");
 
-            choice = scanner.nextInt();
-            scanner.nextLine();
+    public PatientRegistrationControl() {
+        this.patientDAO = new PatientDAO();
+        this.patientRecords = patientDAO.retrieveFromFile();
 
-            switch (choice) {
-                case 1 -> registerPatient();
-                case 2 -> control.displayAllPatients();
-                case 3 -> searchPatient();
-                case 4 -> showReports();
-                case 5 -> System.out.println("Returning to main menu...");
-                default -> System.out.println("Invalid choice! Please try again.");
-            }
-        } while (choice != 5);
-    }
-
-    private void registerPatient() {
-    System.out.print("Enter Patient ID: ");
-    String id = scanner.nextLine();    
-        
-    System.out.print("Enter Patient Name: ");
-    String name = scanner.nextLine();
-
-    System.out.print("Enter Patient Age: ");
-    int age = Integer.parseInt(scanner.nextLine());
-
-    System.out.print("Enter Treatment Type: ");
-    String treatmentType = scanner.nextLine();
-
-    System.out.print("Enter Medical History: ");
-    String medicalHistory = scanner.nextLine();
-
-    System.out.print("Enter Allergies: ");
-    String allergies = scanner.nextLine();
-
-    System.out.print("Enter Contact Number: ");
-    String contactNumber = scanner.nextLine();
-
-    PatientRecord newPatient = new PatientRecord(
-            id,
-            name,
-            age,
-            treatmentType,
-            medicalHistory,
-            allergies,
-            contactNumber
-    );
-
-    control.registerPatient(newPatient);
-    System.out.println("Patient registered successfully!");
-}
-
-
-    private void searchPatient() {
-        System.out.print("Enter Patient ID to search: ");
-        String id = scanner.nextLine();
-        PatientRecord patient = control.searchPatientById(id);
-
-        if (patient != null) {
-            System.out.println("Patient Found: " + patient);
-        } else {
-            System.out.println("No patient found with ID: " + id);
+        if (this.patientRecords == null) {
+            this.patientRecords = new ArrayList<>();
         }
     }
 
-    private void showReports() {
-        System.out.println("\n=== SUMMARY REPORTS ===");
-        recordsControl.generateTotalPatientsReport();
-        recordsControl.generateAgeGroupDistributionReport();
+    public void registerPatient(PatientRecord patient) {
+        patientRecords.add(patient);
+        patientDAO.saveToFile(patientRecords);
     }
+
+    public void displayAllPatients() {
+        if (patientRecords.isEmpty()) {
+            System.out.println("No patients registered yet.");
+            return;
+        }
+
+        System.out.println("Total patients: " + patientRecords.getNumberOfEntries());
+        for (int i = 1; i <= patientRecords.getNumberOfEntries(); i++) {
+            System.out.println(patientRecords.getEntry(i));
+        }
+    }
+
+    public PatientRecord searchPatientById(String id) {
+        for (int i = 1; i <= patientRecords.getNumberOfEntries(); i++) {
+            PatientRecord p = patientRecords.getEntry(i);
+            if (p.getId().equalsIgnoreCase(id)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public int getPatientCount() {
+        return patientRecords.getNumberOfEntries();
+    }
+    
+
+
 }

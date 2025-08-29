@@ -2,68 +2,71 @@ package control;
 
 import adt.ArrayList;
 import adt.ListInterface;
+import entity.Patient;
+import entity.Doctor;
 import entity.Appointment;
 import entity.Consultation;
-import entity.Doctor;
 import entity.DutySlot;
-import entity.Patient;
 
 import java.time.LocalDateTime;
 
+/**
+ * Unified controller for Consultation + shared doctor/patient data.
+ * All collections use ListInterface/ArrayList (1-based).
+ */
 public class ConsultationModuleController {
 
-    private final PatientDirectory patientDir;
-    private final DoctorDirectory doctorDir;
-
+    private final ListInterface<Patient> patients = new ArrayList<>();
+    private final ListInterface<Doctor> doctors = new ArrayList<>();
     private final ListInterface<Appointment> appointments = new ArrayList<>();
     private final ListInterface<Consultation> consultations = new ArrayList<>();
 
-    private int apptSeq = 1000;
-
-    public ConsultationModuleController(PatientDirectory patientDir, DoctorDirectory doctorDir) {
-        this.patientDir = patientDir;
-        this.doctorDir = doctorDir;
+    // ---------- Register / CRUD ----------
+    // Preferred: with age
+    public Patient registerPatient(String id, String name, int age, String phone, String email) {
+        if (findPatientById(id) != null) return null;
+        Patient p = new Patient(id, name, age, phone, email);
+        patients.add(p);
+        return p;
     }
 
-    private String nextAppointmentId() {
-        String id;
-        do {
-            id = "APT" + (++apptSeq);
-        } while (findAppointmentById(id) != null);
-        return id;
+    // Back-compat overload (no age) — falls back to age=0
+    public Patient registerPatient(String id, String name, String phone, String email) {
+        return registerPatient(id, name, 0, phone, email);
     }
 
-    public Appointment createAppointmentAuto(String patientId, String doctorId, LocalDateTime dateTime, String purpose) {
-        String id = nextAppointmentId();
-        return createAppointment(id, patientId, doctorId, dateTime, purpose);
+    public Doctor registerDoctor(String id, String name, String specialization) {
+        if (findDoctorById(id) != null) return null;
+        Doctor d = new Doctor(id, name, specialization);
+        doctors.add(d);
+        return d;
     }
 
-    public Appointment scheduleFollowUpAuto(String consultationId, LocalDateTime dateTime, String purpose) {
-        String id = nextAppointmentId();
-        return scheduleFollowUp(id, consultationId, dateTime, purpose);
-    }
-
-    public Appointment createAppointment(String appointmentId, String patientId, String doctorId, LocalDateTime dateTime, String purpose) {
+    public Appointment createAppointment(String appointmentId, String patientId, String doctorId,
+                                         LocalDateTime dateTime, String purpose) {
         if (findAppointmentById(appointmentId) != null) return null;
-        Patient p = patientDir.findById(patientId);
-        Doctor d = doctorDir.findById(doctorId);
+        Patient p = findPatientById(patientId);
+        Doctor d = findDoctorById(doctorId);
         if (p == null || d == null) return null;
         Appointment a = new Appointment(appointmentId, p, d, dateTime, purpose);
         appointments.add(a);
         return a;
     }
 
-    public Consultation conductConsultation(String consultationId, String appointmentId, String symptoms, String diagnosis, String notes) {
+    public Consultation conductConsultation(String consultationId, String appointmentId,
+                                            String symptoms, String diagnosis, String notes) {
         if (findConsultationById(consultationId) != null) return null;
         Appointment appt = findAppointmentById(appointmentId);
         if (appt == null) return null;
-        Consultation c = new Consultation(consultationId, appt.getPatient(), appt.getDoctor(), appt.getDateTime(), symptoms, diagnosis, notes);
+        Consultation c = new Consultation(consultationId, appt.getPatient(), appt.getDoctor(),
+                                          appt.getDateTime(), symptoms, diagnosis, notes);
         consultations.add(c);
         try { appt.setAttended(true); } catch (Exception ignore) {}
         return c;
     }
 
-    public Appointment scheduleFollowUp(String newAppointmentId, String consultationId, LocalDateTime dateTime, String purpose) {
+    public Appointment scheduleFollowUp(String newAppointmentId, String consultationId,
+                                        LocalDateTime dateTime, String purpose) {
         if (findAppointmentById(newAppointmentId) != null) return null;
         Consultation c = findConsultationById(consultationId);
         if (c == null) return null;
@@ -72,12 +75,53 @@ public class ConsultationModuleController {
         return a;
     }
 
-    public boolean addDutySlot(String doctorId, java.time.DayOfWeek day, java.time.LocalTime start, java.time.LocalTime end) {
-        return doctorDir.addDutySlot(doctorId, day, start, end);
+    // ---------- Doctor duty slots ----------
+    public boolean addDutySlot(String doctorId,
+                               java.time.DayOfWeek day,
+                               java.time.LocalTime start,
+                               java.time.LocalTime end) {
+        Doctor d = findDoctorById(doctorId);
+        if (d == null || !start.isBefore(end)) return false;
+        d.addDutySlot(new DutySlot(day, start, end));
+        return true;
     }
 
+    public String listDoctors() {
+        StringBuilder sb = new StringBuilder("=== Doctors ===\n");
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            sb.append(doctors.getEntry(i)).append("\n");
+        }
+        return sb.toString();
+    }
+    public boolean updateDoctor(String doctorId, String newName, String newSpec) {
+        Doctor doctor = findDoctorById(doctorId);
+        if (doctor == null) {
+            return false; 
+        }
+        if (newName != null && !newName.isBlank()) {
+            doctor.setName(newName);
+        }
+        if (newSpec != null && !newSpec.isBlank()) {
+            doctor.setSpecialization(newSpec);
+        }
+        return true;
+    }
+    
+    public boolean removeDoctor(String doctorId) {
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor doctor = doctors.getEntry(i);
+            if (doctor.getDoctorId().equalsIgnoreCase(doctorId)) {
+                doctors.remove(i);
+                return true; 
+            }
+        }
+        return false;
+    }
+
+
+
     public String showSchedule(String doctorId) {
-        Doctor d = doctorDir.findById(doctorId);
+        Doctor d = findDoctorById(doctorId);
         if (d == null) return "Doctor not found.";
         StringBuilder sb = new StringBuilder("Schedule for ").append(d.getName()).append("\n");
         int n = d.getScheduleNumberOfEntries();
@@ -86,27 +130,21 @@ public class ConsultationModuleController {
         return sb.toString();
     }
 
-    public String listDoctors() {
-        StringBuilder sb = new StringBuilder("=== Doctors ===\n");
-        var ds = doctorDir.all();
-        for (int i = 1; i <= ds.getNumberOfEntries(); i++) sb.append(ds.getEntry(i)).append("\n");
-        return sb.toString();
-    }
-
-    public Patient registerPatient(String id, String name, int age, String phone, String email) {
-        return patientDir.register(id, name, age, phone, email);
-    }
-
-    public Doctor registerDoctor(String id, String name, String specialization) {
-        return doctorDir.register(id, name, specialization);
-    }
-
+    // ---------- Finders ----------
     public Patient findPatientById(String id) {
-        return patientDir.findById(id);
+        for (int i = 1; i <= patients.getNumberOfEntries(); i++) {
+            Patient p = patients.getEntry(i);
+            if (p.getId().equalsIgnoreCase(id)) return p;
+        }
+        return null;
     }
 
     public Doctor findDoctorById(String id) {
-        return doctorDir.findById(id);
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor d = doctors.getEntry(i);
+            if (d.getDoctorId().equalsIgnoreCase(id)) return d;
+        }
+        return null;
     }
 
     public Appointment findAppointmentById(String id) {
@@ -124,19 +162,10 @@ public class ConsultationModuleController {
         }
         return null;
     }
-public boolean updateDoctor(String id, String name, String specialization) {
-    return doctorDir.update(id, name, specialization);
-}
 
-public boolean removeDoctor(String id) {
-    return doctorDir.remove(id);
-}
-
+    // ---------- Getters for UI/Reports ----------
+    public ListInterface<Patient> getPatients() { return patients; }
+    public ListInterface<Doctor> getDoctors() { return doctors; }
     public ListInterface<Appointment> getAppointments() { return appointments; }
-
     public ListInterface<Consultation> getConsultations() { return consultations; }
-
-    public ListInterface<Patient> getPatients() { return patientDir.all(); }
-
-    public ListInterface<Doctor> getDoctors() { return doctorDir.all(); }
 }

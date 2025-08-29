@@ -54,6 +54,7 @@ public class DoctorManagementUI {
         String name = scanner.nextLine().trim();
         System.out.print("Specialization: ");
         String spec = scanner.nextLine().trim();
+
         Doctor d = controller.registerDoctor(id, name, spec);
         System.out.println(d == null ? "Duplicate doctor ID." : "Doctor added: " + id);
     }
@@ -100,6 +101,7 @@ public class DoctorManagementUI {
             System.out.println("Invalid time.");
             return;
         }
+
         boolean ok = controller.addDutySlot(id, day, start, end);
         System.out.println(ok ? "Duty slot added." : "Failed (check doctor ID or time range).");
     }
@@ -112,10 +114,12 @@ public class DoctorManagementUI {
             System.out.println("Doctor not found.");
             return;
         }
+
         System.out.print("New name (leave blank to keep \"" + d.getName() + "\"): ");
         String name = scanner.nextLine().trim();
         System.out.print("New specialization (leave blank to keep \"" + d.getSpecialization() + "\"): ");
         String spec = scanner.nextLine().trim();
+
         boolean updated = controller.updateDoctor(id, name, spec);
         System.out.println(updated ? "Doctor updated." : "Update failed.");
     }
@@ -140,6 +144,7 @@ public class DoctorManagementUI {
         System.out.println("3. Utilization Report (last N days)");
         System.out.print("Choose: ");
         int c = readInt();
+
         switch (c) {
             case 1 -> {
                 System.out.print("Month (1-12): ");

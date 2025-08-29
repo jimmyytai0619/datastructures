@@ -25,7 +25,7 @@ public class ConsultationModuleUI {
     public void run() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("\n=== Consultation Management ===");
+            System.out.println("\n=== Consultation Management (Module 3) ===");
             System.out.println("1. Create Appointment");
             System.out.println("2. Conduct Consultation");
             System.out.println("3. Schedule Follow-up Appointment");
@@ -51,6 +51,8 @@ public class ConsultationModuleUI {
     }
 
     private void createAppointment() {
+        System.out.print("Appointment ID: ");
+        String id = scanner.nextLine().trim();
         System.out.print("Patient ID: ");
         String pid = scanner.nextLine().trim();
         System.out.print("Doctor ID: ");
@@ -59,15 +61,15 @@ public class ConsultationModuleUI {
         LocalTime time = readTime("Time (HH:MM): ");
         System.out.print("Purpose: ");
         String purpose = scanner.nextLine().trim();
-        Appointment a = controller.createAppointmentAuto(pid, did, LocalDateTime.of(date, time), purpose);
-        System.out.println(a == null ? "Invalid patient/doctor ID." : "Created: " + a.getAppointmentId());
+        Appointment a = controller.createAppointment(id, pid, did, LocalDateTime.of(date, time), purpose);
+        System.out.println(a == null ? "Invalid patient/doctor ID or duplicate appointment." : "Created: " + id);
     }
 
     private void conductConsultation() {
-        String aid = pickPendingAppointmentId();
-        if (aid == null) return;
         System.out.print("Consultation ID: ");
         String cid = scanner.nextLine().trim();
+        System.out.print("Appointment ID: ");
+        String aid = scanner.nextLine().trim();
         System.out.print("Symptoms: ");
         String symptoms = scanner.nextLine().trim();
         System.out.print("Diagnosis: ");
@@ -75,18 +77,20 @@ public class ConsultationModuleUI {
         System.out.print("Notes: ");
         String notes = scanner.nextLine().trim();
         Consultation c = controller.conductConsultation(cid, aid, symptoms, diagnosis, notes);
-        System.out.println(c == null ? "Invalid appointment or duplicate consultation." : "Consultation recorded: " + cid);
+        System.out.println(c == null ? "Invalid appointment ID or duplicate consultation." : "Consultation recorded: " + cid);
     }
 
     private void scheduleFollowUp() {
         System.out.print("Existing Consultation ID: ");
         String cid = scanner.nextLine().trim();
+        System.out.print("New Appointment ID: ");
+        String aid = scanner.nextLine().trim();
         LocalDate date = readDate("Follow-up Date (YYYY-MM-DD): ");
         LocalTime time = readTime("Time (HH:MM): ");
         System.out.print("Purpose: ");
         String purpose = scanner.nextLine().trim();
-        Appointment a = controller.scheduleFollowUpAuto(cid, LocalDateTime.of(date, time), purpose);
-        System.out.println(a == null ? "Invalid consultation ID." : "Follow-up scheduled: " + a.getAppointmentId());
+        Appointment a = controller.scheduleFollowUp(aid, cid, LocalDateTime.of(date, time), purpose);
+        System.out.println(a == null ? "Invalid consultation ID or duplicate appointment." : "Follow-up scheduled: " + aid);
     }
 
     private void listAppointments() {
@@ -113,74 +117,20 @@ public class ConsultationModuleUI {
         }
     }
 
-    private String pickPendingAppointmentId() {
-        var list = controller.getAppointments();
-        int n = list.getNumberOfEntries();
-        int count = 0;
-        for (int i = 1; i <= n; i++) {
-            var a = list.getEntry(i);
-            boolean attended = false;
-            try { attended = a.isAttended(); } catch (Exception ignore) {}
-            if (!attended) count++;
-        }
-        if (count == 0) {
-            System.out.println("(no pending appointments)");
-            return null;
-        }
-        int[] map = new int[count + 1];
-        int k = 0;
-        System.out.println("\n=== Pending Appointments ===");
-        for (int i = 1; i <= n; i++) {
-            var a = list.getEntry(i);
-            boolean attended = false;
-            try { attended = a.isAttended(); } catch (Exception ignore) {}
-            if (!attended) {
-                k++;
-                map[k] = i;
-                System.out.println(k + ". " + a.getAppointmentId() + " | "
-                        + a.getPatient().getName() + " with "
-                        + a.getDoctor().getName() + " @ " + a.getDateTime());
-            }
-        }
-        int sel = readInt("Choose (1-" + count + "): ");
-        if (sel < 1 || sel > count) {
-            System.out.println("Invalid selection.");
-            return null;
-        }
-        return list.getEntry(map[sel]).getAppointmentId();
-    }
-
-    private int readInt(String prompt) {
-        while (true) {
-            try {
-                System.out.print(prompt);
-                return Integer.parseInt(scanner.nextLine().trim());
-            } catch (Exception e) {
-                System.out.println("Please enter a valid integer.");
-            }
-        }
-    }
-
+    // -------- helpers --------
     private LocalDate readDate(String prompt) {
         while (true) {
-            try {
-                System.out.print(prompt);
-                return LocalDate.parse(scanner.nextLine().trim());
-            } catch (Exception e) {
-                System.out.println("Invalid date.");
-            }
+            try { System.out.print(prompt); return LocalDate.parse(scanner.nextLine().trim()); }
+            catch (Exception e) { System.out.println("Invalid date."); }
         }
     }
-
     private LocalTime readTime(String prompt) {
         while (true) {
             try {
                 System.out.print(prompt);
                 String s = scanner.nextLine().trim();
                 return LocalTime.parse(s.length()==5 ? s + ":00" : s);
-            } catch (Exception e) {
-                System.out.println("Invalid time.");
-            }
+            } catch (Exception e) { System.out.println("Invalid time."); }
         }
     }
 }
