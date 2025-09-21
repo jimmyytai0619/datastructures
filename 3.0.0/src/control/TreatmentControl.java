@@ -3,53 +3,71 @@ package control;
 import entity.Patient;
 import entity.Treatment;
 import adt.ListInterface;
+import java.util.StringJoiner;
 
 public class TreatmentControl {
 
     public void addTreatmentToPatient(Patient patient, Treatment treatment) {
+        if (patient == null || treatment == null) {
+            throw new IllegalArgumentException("Patient and treatment cannot be null");
+        }
         patient.addTreatment(treatment);
     }
 
     public ListInterface<Treatment> getTreatmentHistory(Patient patient) {
+        if (patient == null) {
+            throw new IllegalArgumentException("Patient cannot be null");
+        }
         return patient.getTreatments();
     }
 
-public void generateTreatmentCountReport(ListInterface<? extends Patient> patientList){
-    System.out.println("\n=== Patient Treatment Count Report ===");
-    System.out.printf("%-10s %-20s %-15s\n", "Patient ID", "Patient Name", "Total Treatments");
-    System.out.println("------------------------------------------------------");
-
-    for (int i = 1; i <= patientList.getNumberOfEntries(); i++) {
-        Patient p = patientList.getEntry(i);
-        int count = p.getTreatments().getNumberOfEntries();
-        System.out.printf("%-10s %-20s %-15d\n", p.getId(), p.getName(), count);
-    }
-
-    System.out.println("------------------------------------------------------");
-    System.out.println("Total Patients: " + patientList.getNumberOfEntries());
-}
-
-public void generateTreatmentCoverageReport(ListInterface<? extends Patient> patientList){
-    System.out.println("\n=== Treatment Coverage Report ===");
-    int treated = 0;
-
-    for (int i = 1; i <= patientList.getNumberOfEntries(); i++) {
-        Patient p = patientList.getEntry(i);
-        if (p.getTreatments().getNumberOfEntries() > 0) {
-            treated++;
+    // Return report as String for flexibility
+    public String generateTreatmentCountReport(ListInterface<? extends Patient> patientList) {
+        if (patientList == null || patientList.isEmpty()) {
+            return "No patients available for report.";
         }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n=== Patient Treatment Count Report ===\n");
+        sb.append(String.format("%-10s %-20s %-15s\n", "Patient ID", "Patient Name", "Total Treatments"));
+        sb.append("------------------------------------------------------\n");
+
+        for (int i = 1; i <= patientList.getNumberOfEntries(); i++) {
+            Patient p = patientList.getEntry(i);
+            int count = p.getTreatments().getNumberOfEntries();
+            sb.append(String.format("%-10s %-20s %-15d\n", p.getId(), p.getName(), count));
+        }
+
+        sb.append("------------------------------------------------------\n");
+        sb.append("Total Patients: ").append(patientList.getNumberOfEntries()).append("\n");
+        return sb.toString();
     }
 
-    int totalPatients = patientList.getNumberOfEntries();
-    int untreated = totalPatients - treated;
+    public String generateTreatmentCoverageReport(ListInterface<? extends Patient> patientList) {
+        if (patientList == null || patientList.isEmpty()) {
+            return "No patients available for report.";
+        }
 
-    System.out.println("Total Patients          : " + totalPatients);
-    System.out.println("Patients with Treatments: " + treated);
-    System.out.println("Patients without Treatments: " + untreated);
+        int treated = 0;
+        for (int i = 1; i <= patientList.getNumberOfEntries(); i++) {
+            Patient p = patientList.getEntry(i);
+            if (p.getTreatments().getNumberOfEntries() > 0) {
+                treated++;
+            }
+        }
 
-    double coverage = totalPatients == 0 ? 0 : ((double) treated / totalPatients) * 100;
-    System.out.printf("Treatment Coverage Rate : %.2f%%\n", coverage);
-}
+        int totalPatients = patientList.getNumberOfEntries();
+        int untreated = totalPatients - treated;
 
+        StringJoiner report = new StringJoiner("\n");
+        report.add("\n=== Treatment Coverage Report ===");
+        report.add("Total Patients          : " + totalPatients);
+        report.add("Patients with Treatments: " + treated);
+        report.add("Patients without Treatments: " + untreated);
 
+        double coverage = totalPatients == 0 ? 0 : ((double) treated / totalPatients) * 100;
+        report.add(String.format("Treatment Coverage Rate : %.2f%%", coverage));
+
+        return report.toString();
+    }
 }
