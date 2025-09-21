@@ -98,7 +98,7 @@ public class TreatmentBoundary {
         String id = sc.nextLine().trim();
         Patient patient = patientControl.searchPatientById(id);
         if (patient == null) {
-            System.out.println("❌ Patient not found!");
+            System.out.println(" Patient not found!");
         }
         return patient;
     }
@@ -114,3 +114,4 @@ public class TreatmentBoundary {
         return val;
     }
 }
+
