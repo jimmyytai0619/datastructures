@@ -5,30 +5,24 @@ import java.io.Serializable;
 public class PatientRecord extends Patient implements Serializable {
     private String medicalHistory;
     private String allergies;
-    private String contactNumber;
 
-    public PatientRecord(String id, String name, int age, String treatmentType,
-                         String medicalHistory, String allergies, String contactNumber) {
-        super(id, name, age, "", ""); 
+    public PatientRecord(String id, String name, int age, String medicalHistory, String allergies, String contactNumber) {
+        super(id, name, age, contactNumber, "");  // ✅ contactNumber 传给父类
         this.medicalHistory = medicalHistory;
         this.allergies = allergies;
-        this.contactNumber = contactNumber;
     }
 
-    // Getters and setters
     public String getMedicalHistory() { return medicalHistory; }
     public void setMedicalHistory(String medicalHistory) { this.medicalHistory = medicalHistory; }
 
     public String getAllergies() { return allergies; }
     public void setAllergies(String allergies) { this.allergies = allergies; }
 
-    public String getContactNumber() { return contactNumber; }
-    public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
-
     @Override
     public String toString() {
         return super.toString() +
-                String.format("\nMedical History: %s\nAllergies: %s\nContact: %s",
-                        medicalHistory, allergies, contactNumber);
+                String.format("\nMedical History: %s\nAllergies: %s",
+                        medicalHistory, allergies);
     }
 }
+
