@@ -22,13 +22,16 @@ public class PatientRegistrationControl {
         }
     }
 
-    // ✅ 新增病人
-    public void registerPatient(PatientRecord patient) {
+    public boolean registerPatient(PatientRecord patient) {
+        if (containsPatientId(patient.getId())) {
+            System.out.println("Patient with ID " + patient.getId() + " already exists!");
+            return false; 
+        }
         patientRecords.add(patient);
         patientDAO.saveToFile(patientRecords);
+        return true;
     }
 
-    // ✅ 显示所有病人
     public void displayAllPatients() {
         if (patientRecords.isEmpty()) {
             System.out.println("No patients registered yet.");
@@ -41,46 +44,89 @@ public class PatientRegistrationControl {
         }
     }
 
-    // ✅ 按ID搜索病人
-    public PatientRecord searchPatientById(String id) {
-        for (int i = 1; i <= patientRecords.getNumberOfEntries(); i++) {
-            PatientRecord p = patientRecords.getEntry(i);
-            if (p.getId().equalsIgnoreCase(id)) {
-                return p;
-            }
-        }
-        return null;
-    }
-
-    // ✅ 病人人数
     public int getPatientCount() {
         return patientRecords.getNumberOfEntries();
     }
 
-    // 🔹 删除病人
     public boolean deletePatientById(String id) {
         for (int i = 1; i <= patientRecords.getNumberOfEntries(); i++) {
             PatientRecord p = patientRecords.getEntry(i);
             if (p.getId().equalsIgnoreCase(id)) {
                 patientRecords.remove(i);
-                patientDAO.saveToFile(patientRecords); // 保存修改
-                return true; // 删除成功
+                patientDAO.saveToFile(patientRecords);
+                return true;
             }
         }
-        return false; // 没找到
+        return false;
     }
 
-    // 🔹 更新病人信息
     public boolean updatePatient(PatientRecord updatedPatient) {
         for (int i = 1; i <= patientRecords.getNumberOfEntries(); i++) {
             PatientRecord p = patientRecords.getEntry(i);
             if (p.getId().equalsIgnoreCase(updatedPatient.getId())) {
-                // 用新的覆盖旧的
+                for (int j = 1; j <= patientRecords.getNumberOfEntries(); j++) {
+                    if (j != i && patientRecords.getEntry(j).getId().equalsIgnoreCase(updatedPatient.getId())) {
+                        System.out.println("Update failed: Another patient already has ID " + updatedPatient.getId());
+                        return false;
+                    }
+                }
                 patientRecords.replace(i, updatedPatient);
-                patientDAO.saveToFile(patientRecords); // 保存修改
-                return true; // 更新成功
+                patientDAO.saveToFile(patientRecords);
+                return true;
             }
         }
-        return false; // 没找到
+        return false;
+    }
+
+    public void clearAllPatients() {
+        patientRecords.clear();
+        patientDAO.saveToFile(patientRecords);
+        System.out.println("All patient records have been cleared!");
+    }
+
+    private boolean containsPatientId(String id) {
+        for (int i = 1; i <= patientRecords.getNumberOfEntries(); i++) {
+            if (patientRecords.getEntry(i).getId().equalsIgnoreCase(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void sortPatientsById() {
+        int n = patientRecords.getNumberOfEntries();
+        for (int i = 1; i <= n; i++) {
+            for (int j = i + 1; j <= n; j++) {
+                PatientRecord p1 = patientRecords.getEntry(i);
+                PatientRecord p2 = patientRecords.getEntry(j);
+                if (p1.getId().compareToIgnoreCase(p2.getId()) > 0) {
+                    patientRecords.replace(i, p2);
+                    patientRecords.replace(j, p1);
+                }
+            }
+        }
+        patientDAO.saveToFile(patientRecords);
+    }
+
+    public PatientRecord binarySearchPatientById(String id) {
+        sortPatientsById();
+
+        int left = 1;
+        int right = patientRecords.getNumberOfEntries();
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            PatientRecord midPatient = patientRecords.getEntry(mid);
+
+            int cmp = midPatient.getId().compareToIgnoreCase(id);
+            if (cmp == 0) {
+                return midPatient;
+            } else if (cmp < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return null;
     }
 }
