@@ -29,31 +29,36 @@ public class PatientRegistrationUI {
     }
 
     public void showMenu() {
-        int choice;
-        do {
-            System.out.println("\n=== PATIENT MANAGEMENT ===");
-            System.out.println("1. Register New Patient");
-            System.out.println("2. View All Patients");
-            System.out.println("3. Search Patient by ID");
-            System.out.println("4. Update Patient");
-            System.out.println("5. Delete Patient");
-            System.out.println("6. Show Reports");
-            System.out.println("7. Back to Main Menu");
-            System.out.print("Enter your choice: ");
+    int choice;
+    do {
+        System.out.println("\n=== PATIENT MANAGEMENT ===");
+        System.out.println("1. Register New Patient");
+        System.out.println("2. View All Patients");
+        System.out.println("3. Search Patient by ID");
+        System.out.println("4. Search Patient by Name");
+        System.out.println("5. Update Patient");
+        System.out.println("6. Delete Patient");
+        System.out.println("7. Clear All Patients");
+        System.out.println("8. Show Reports");
+        System.out.println("9. Back to Main Menu");
+        System.out.print("Enter your choice: ");
 
-            choice = readInt();
-            switch (choice) {
-                case 1 -> registerPatient();
-                case 2 -> control.displayAllPatients();
-                case 3 -> searchPatient();
-                case 4 -> updatePatient();
-                case 5 -> deletePatient();
-                case 6 -> showReports();
-                case 7 -> System.out.println("Returning to main menu...");
-                default -> System.out.println("Invalid choice! Please try again.");
-            }
-        } while (choice != 7);
-    }
+        choice = readInt();
+        switch (choice) {
+            case 1 -> registerPatient();
+            case 2 -> control.displayAllPatients();
+            case 3 -> searchPatient();
+            case 4 -> searchPatientByName();
+            case 5 -> updatePatient();
+            case 6 -> deletePatient();
+            case 7 -> clearAllPatients();
+            case 8 -> showReports();
+            case 9 -> System.out.println("Returning to main menu...");
+            default -> System.out.println("Invalid choice! Please try again.");
+        }
+    } while (choice != 9);
+}
+
 
     // -------- Register Patient --------
     private void registerPatient() {
@@ -76,24 +81,30 @@ public class PatientRegistrationUI {
         PatientRecord newPatient = new PatientRecord(
                 id, name, age, medicalHistory, allergies, contactNumber
         );
-        control.registerPatient(newPatient);
-        System.out.println("Patient registered successfully!");
+
+        boolean ok = control.registerPatient(newPatient);
+        if (ok) {
+            System.out.println("Patient registered successfully!");
+        } else {
+            System.out.println("Registration failed (duplicate ID).");
+            return;
+        }
 
         if (sharedDir != null) {
             Patient p = new Patient(id, name, age, contactNumber, "");
-            boolean ok = sharedDir.add(p);
-            if (ok) {
-                System.out.println("Synced to shared directory ✅");
+            boolean synced = sharedDir.add(p);
+            if (synced) {
+                System.out.println("Synced to shared directory");
             } else {
                 System.out.println("Warning: duplicate ID in shared directory (sync skipped).");
             }
         }
     }
 
-    // -------- Search Patient --------
+    // -------- Search Patient by ID --------
     private void searchPatient() {
         String id = safeInput("Enter Patient ID to search: ");
-        PatientRecord patient = control.searchPatientById(id);
+        PatientRecord patient = control.binarySearchPatientById(id);
 
         if (patient != null) {
             System.out.println("Patient Found: " + patient);
@@ -102,10 +113,28 @@ public class PatientRegistrationUI {
         }
     }
 
+    // -------- Search Patient by Name (contains) --------
+    private void searchPatientByName() {
+        String keyword = safeInput("Enter part of the name to search: ");
+        boolean found = false;
+
+        for (int i = 1; i <= control.getAllPatients().getNumberOfEntries(); i++) {
+            PatientRecord p = control.getAllPatients().getEntry(i);
+            if (p.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                System.out.println("Match: " + p);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("No patient found with name containing: " + keyword);
+        }
+    }
+
     // -------- Update Patient --------
     private void updatePatient() {
         String id = safeInput("Enter Patient ID to update: ");
-        PatientRecord existing = control.searchPatientById(id);
+        PatientRecord existing = control.binarySearchPatientById(id);
 
         if (existing == null) {
             System.out.println("No patient found with ID: " + id);
@@ -137,7 +166,7 @@ public class PatientRegistrationUI {
 
         String contactNumber;
         while (true) {
-            contactNumber = safeInput("Enter New Contact Number (" + existing.getContactNumber() + "): ");
+            contactNumber = safeInput("Enter New Contact Number(" + existing.getContactNumber() + "):");
             if (contactNumber.isEmpty()) {
                 contactNumber = existing.getContactNumber();
                 break;
@@ -155,19 +184,36 @@ public class PatientRegistrationUI {
         if (control.updatePatient(updated)) {
             System.out.println("Patient updated successfully!");
         } else {
-            System.out.println("Update failed.");
+            System.out.println("Update failed (possible ID conflict).");
         }
     }
 
     // -------- Delete Patient --------
     private void deletePatient() {
         String id = safeInput("Enter Patient ID to delete: ");
-        boolean ok = control.deletePatientById(id);
+        PatientRecord existing = control.binarySearchPatientById(id);
 
+        if (existing == null) {
+            System.out.println("No patient found with ID: " + id);
+            return;
+        }
+
+        boolean ok = control.deletePatientById(id);
         if (ok) {
             System.out.println("Patient deleted successfully!");
         } else {
-            System.out.println("No patient found with ID: " + id);
+            System.out.println("Delete failed.");
+        }
+    }
+
+    // -------- Clear All Patients --------
+    private void clearAllPatients() {
+        System.out.print("Are you sure you want to clear ALL patients? (yes/no): ");
+        String confirm = scanner.nextLine().trim().toLowerCase();
+        if (confirm.equals("yes")) {
+            control.clearAllPatients();
+        } else {
+            System.out.println("Clear operation cancelled.");
         }
     }
 
@@ -192,21 +238,29 @@ public class PatientRegistrationUI {
 
     // -------- Helpers --------
     private String safeInput(String prompt) {
+    while (true) {
         System.out.print(prompt);
-        return scanner.nextLine().trim();
+        String input = scanner.nextLine().trim();
+        if (!input.isEmpty()) {
+            return input;
+        }
+        System.out.println("Input cannot be empty, please try again.");
     }
+}
+
 
     private int readInt(String prompt) {
-        while (true) {
-            try {
-                if (prompt != null) System.out.print(prompt);
-                String input = scanner.nextLine().trim();
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid number, please enter a valid integer.");
-            }
+    while (true) {
+        try {
+            if (prompt != null) System.out.print(prompt);
+            String input = scanner.nextLine().trim(); // 
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number, please enter a valid integer.");
         }
     }
+}
+
 
     private int readInt() {
         return readInt(null);
