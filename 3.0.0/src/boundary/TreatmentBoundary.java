@@ -93,15 +93,20 @@ public class TreatmentBoundary {
     }
 
     // Helper method for patient lookup
-    private Patient promptPatientById() {
-        System.out.print("Enter patient ID: ");
-        String id = sc.nextLine().trim();
-        Patient patient = patientControl.searchPatientById(id);
-        if (patient == null) {
-            System.out.println(" Patient not found!");
-        }
-        return patient;
+private Patient promptPatientById() {
+    System.out.print("Enter patient ID: ");
+    String id = sc.nextLine().trim();
+
+    patientControl.sortPatientsById();
+
+    Patient patient = patientControl.binarySearchPatientById(id);
+
+    if (patient == null) {
+        System.out.println("Patient not found!");
     }
+    return patient;
+}
+
 
     // Safe integer input
     private int safeReadInt() {
@@ -114,4 +119,3 @@ public class TreatmentBoundary {
         return val;
     }
 }
-
