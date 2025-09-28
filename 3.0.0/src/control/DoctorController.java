@@ -1,7 +1,7 @@
 package control;
 
 import entity.Doctor;
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class DoctorController {
@@ -15,8 +15,8 @@ public class DoctorController {
         return doctorDir.register(id, name, specialization);
     }
 
-    public boolean addDutySlot(String doctorId, DayOfWeek day, LocalTime start, LocalTime end) {
-        return doctorDir.addDutySlot(doctorId, day, start, end);
+    public boolean addDutySlot(String doctorId, LocalDate date, LocalTime start, LocalTime end) {
+        return doctorDir.addDutySlot(doctorId, date, start, end);
     }
 
     public boolean updateDoctor(String id, String name, String spec) {
@@ -31,6 +31,10 @@ public class DoctorController {
         return doctorDir.findById(id);
     }
 
+    public Doctor findDoctorByIdBinary(String id) {
+        return doctorDir.binarySearchById(id);
+    }
+
     public String showSchedule(String doctorId) {
         Doctor d = doctorDir.findById(doctorId);
         if (d == null) return "Doctor not found.";
@@ -43,5 +47,14 @@ public class DoctorController {
 
     public adt.ListInterface<Doctor> getDoctors() {
         return doctorDir.all();
+    }
+
+    // --- Sorting features ---
+    public void sortDoctorsByName() {
+        doctorDir.sortByName();
+    }
+
+    public void sortDoctorsBySpecialization() {
+        doctorDir.sortBySpecialization();
     }
 }
