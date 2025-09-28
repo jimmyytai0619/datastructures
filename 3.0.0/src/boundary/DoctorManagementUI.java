@@ -4,12 +4,12 @@ import control.DoctorController;
 import control.ReportController;
 import entity.Doctor;
 
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
 
 public class DoctorManagementUI {
-    private final DoctorController doctorController;   // use DoctorController
+    private final DoctorController doctorController;
     private final Scanner scanner = new Scanner(System.in);
     private final ReportController reportGen;
 
@@ -29,7 +29,10 @@ public class DoctorManagementUI {
             System.out.println("5. Remove Doctor");
             System.out.println("6. View Doctor Schedule");
             System.out.println("7. View Doctors Report");
-            System.out.println("8. Back");
+            System.out.println("8. Search Doctor by Binary Search");
+            System.out.println("9. Sort Doctors by Name");
+            System.out.println("10. Sort Doctors by Specialization");
+            System.out.println("11. Back");  
             System.out.print("Enter choice: ");
             choice = readInt();
 
@@ -41,10 +44,13 @@ public class DoctorManagementUI {
                 case 5 -> removeDoctor();
                 case 6 -> viewSchedule();
                 case 7 -> reports();
-                case 8 -> System.out.println("Returning...");
+                case 8 -> binarySearchDoctor();
+                case 9 -> sortDoctorsByName();
+                case 10 -> sortDoctorsBySpecialization();
+                case 11 -> System.out.println("Returning...");
                 default -> System.out.println("Invalid choice.");
             }
-        } while (choice != 8);
+        } while (choice != 11);
     }
 
     private void addDoctor() {
@@ -74,14 +80,16 @@ public class DoctorManagementUI {
     private void addDutySlot() {
         System.out.print("Doctor ID: ");
         String id = scanner.nextLine().trim();
-        System.out.print("DayOfWeek (e.g., MONDAY): ");
-        DayOfWeek day;
+
+        System.out.print("Date (YYYY-MM-DD): ");
+        LocalDate date;
         try {
-            day = DayOfWeek.valueOf(scanner.nextLine().trim().toUpperCase());
+            date = LocalDate.parse(scanner.nextLine().trim());
         } catch (Exception e) {
-            System.out.println("Invalid day.");
+            System.out.println("Invalid date format.");
             return;
         }
+
         System.out.print("Start (HH:MM): ");
         LocalTime start;
         try {
@@ -91,6 +99,7 @@ public class DoctorManagementUI {
             System.out.println("Invalid time.");
             return;
         }
+
         System.out.print("End (HH:MM): ");
         LocalTime end;
         try {
@@ -100,7 +109,8 @@ public class DoctorManagementUI {
             System.out.println("Invalid time.");
             return;
         }
-        boolean ok = doctorController.addDutySlot(id, day, start, end);
+
+        boolean ok = doctorController.addDutySlot(id, date, start, end);
         System.out.println(ok ? "Duty slot added." : "Failed (check doctor ID or time range).");
     }
 
@@ -160,6 +170,30 @@ public class DoctorManagementUI {
             }
             default -> System.out.println("Invalid choice.");
         }
+    }
+
+    private void binarySearchDoctor() {
+        System.out.print("Enter Doctor ID to search (Binary Search): ");
+        String id = scanner.nextLine().trim();
+        Doctor d = doctorController.findDoctorByIdBinary(id);
+        if (d == null) {
+            System.out.println("Doctor not found (binary search).");
+        } else {
+            System.out.println("Doctor found: " + d.getDoctorId() + " - " + d.getName()
+                               + " (" + d.getSpecialization() + ")");
+        }
+    }
+
+    private void sortDoctorsByName() {
+        doctorController.sortDoctorsByName();
+        System.out.println("Doctors sorted by Name.");
+        viewDoctors();
+    }
+
+    private void sortDoctorsBySpecialization() {
+        doctorController.sortDoctorsBySpecialization();
+        System.out.println("Doctors sorted by Specialization.");
+        viewDoctors();
     }
 
     private int readInt() {
