@@ -223,17 +223,6 @@ public class PatientRegistrationUI {
 
         recordsControl.generateTotalPatientsReport();
         recordsControl.generateAgeGroupDistributionReport();
-
-        if (sharedDir != null) {
-            System.out.println("-- Shared Directory Snapshot --");
-            var list = sharedDir.all();
-            System.out.println("Total (shared): " + list.getNumberOfEntries());
-            if (list.getNumberOfEntries() > 0) {
-                for (int i = 1; i <= list.getNumberOfEntries(); i++) {
-                    System.out.println(" - " + list.getEntry(i));
-                }
-            }
-        }
     }
 
     // -------- Helpers --------
