@@ -6,8 +6,9 @@ import entity.Appointment;
 import entity.Consultation;
 import entity.Doctor;
 import entity.Patient;
-
 import java.time.LocalDateTime;
+// NEW //
+import java.time.Duration;
 
 public class ConsultationModuleController {
 
@@ -109,5 +110,72 @@ public class ConsultationModuleController {
     public ListInterface<Consultation> getConsultations() { return consultations; }
     public ListInterface<Patient> getPatients() { return patientDir.all(); }
     public ListInterface<Doctor> getDoctors() { return doctorDir.all(); }
+    
+    //NEW//
+    public adt.ListInterface<Consultation> searchConsultationsByKeyword(String keyword) {
+        adt.ListInterface<Consultation> out = new adt.ArrayList<>();
+        if (keyword == null || keyword.trim().isEmpty()) return out;
+        String k = keyword.toLowerCase();
+        for (int i = 1; i <= consultations.getNumberOfEntries(); i++) {
+            Consultation c = consultations.getEntry(i);
+            String s1 = c.getSymptoms() == null ? "" : c.getSymptoms().toLowerCase();
+            String s2 = c.getDiagnosis() == null ? "" : c.getDiagnosis().toLowerCase();
+            String s3 = c.getNotes() == null ? "" : c.getNotes().toLowerCase();
+            if (s1.contains(k) || s2.contains(k) || s3.contains(k)) out.add(c);
+        }
+        return out;
+    }
+
+    public String exportConsultationsCsv() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("consultationId,patientId,patientName,doctorId,doctorName,datetime,symptoms,diagnosis,notes\n");
+        for (int i = 1; i <= consultations.getNumberOfEntries(); i++) {
+            Consultation c = consultations.getEntry(i);
+            String pid = c.getPatient()==null? "": c.getPatient().getId();
+            String pname = c.getPatient()==null? "": c.getPatient().getName();
+            String did = c.getDoctor()==null? "": c.getDoctor().getDoctorId();
+            String dname = c.getDoctor()==null? "": c.getDoctor().getName();
+            String dt = c.getDateTime()==null? "": c.getDateTime().toString();
+            String sy = c.getSymptoms()==null? "": c.getSymptoms().replace(",", " ");
+            String dg = c.getDiagnosis()==null? "": c.getDiagnosis().replace(",", " ");
+            String nt = c.getNotes()==null? "": c.getNotes().replace(",", " ");
+            sb.append(c.getConsultationId()).append(",")
+              .append(pid).append(",")
+              .append(pname).append(",")
+              .append(did).append(",")
+              .append(dname).append(",")
+              .append(dt).append(",")
+              .append(sy).append(",")
+              .append(dg).append(",")
+              .append(nt).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public String exportAppointmentsCsv() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("appointmentId,patientId,patientName,doctorId,doctorName,datetime,attended,purpose\n");
+        for (int i = 1; i <= appointments.getNumberOfEntries(); i++) {
+            Appointment a = appointments.getEntry(i);
+            String pid = a.getPatient()==null? "": a.getPatient().getId();
+            String pname = a.getPatient()==null? "": a.getPatient().getName();
+            String did = a.getDoctor()==null? "": a.getDoctor().getDoctorId();
+            String dname = a.getDoctor()==null? "": a.getDoctor().getName();
+            String dt = a.getDateTime()==null? "": a.getDateTime().toString();
+            boolean attended = false;
+            try { attended = a.isAttended(); } catch (Exception ignore) {}
+            String pur = a.getPurpose()==null? "": a.getPurpose().replace(",", " ");
+            sb.append(a.getAppointmentId()).append(",")
+              .append(pid).append(",")
+              .append(pname).append(",")
+              .append(did).append(",")
+              .append(dname).append(",")
+              .append(dt).append(",")
+              .append(attended).append(",")
+              .append(pur).append("\n");
+        }
+        return sb.toString();
+    }
+
 }
 
