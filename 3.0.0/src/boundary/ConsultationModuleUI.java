@@ -34,7 +34,7 @@ public class ConsultationModuleUI {
             System.out.println("6. Report: Consultations per Doctor");
             System.out.println("7. Report: Unpaid Appointments per Patient");
             System.out.println("8. Search Consultations by Keyword");
-            System.out.println("9. Export Consultations CSV");
+            System.out.println("9. Export Consultations table");
             System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = scanner.nextLine().trim();
@@ -47,7 +47,7 @@ public class ConsultationModuleUI {
                 case "6" -> System.out.println(reportController.generateConsultationsPerDoctorReport());
                 case "7" -> System.out.println(reportController.generateUnattendAppointmentsPerPatientReport());
                 case "8" -> searchConsultations();
-                case "9" -> exportConsultations();
+                case "9" -> exportConsultations(); 
                 case "0" -> exit = true;
                 default -> System.out.println("Invalid option.");
             }
@@ -210,10 +210,8 @@ public class ConsultationModuleUI {
     }
 
     private void exportConsultations() {
-        String csv = controller.exportConsultationsCsv();
-        System.out.println("\n=== CSV START ===");
-        System.out.print(csv);
-        System.out.println("=== CSV END ===");
+        String table = controller.renderConsultationsTable();
+    System.out.println("\n" + table);
     }
 
 }
