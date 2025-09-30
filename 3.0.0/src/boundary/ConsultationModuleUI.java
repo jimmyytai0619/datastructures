@@ -32,7 +32,9 @@ public class ConsultationModuleUI {
             System.out.println("4. List Appointments");
             System.out.println("5. List Consultations");
             System.out.println("6. Report: Consultations per Doctor");
-            System.out.println("7. Report: Upcoming Appointments per Patient");
+            System.out.println("7. Report: Unpaid Appointments per Patient");
+            System.out.println("8. Search Consultations by Keyword");
+            System.out.println("9. Export Consultations CSV");
             System.out.println("0. Back");
             System.out.print("Choose: ");
             String choice = scanner.nextLine().trim();
@@ -43,12 +45,15 @@ public class ConsultationModuleUI {
                 case "4" -> listAppointments();
                 case "5" -> listConsultations();
                 case "6" -> System.out.println(reportController.generateConsultationsPerDoctorReport());
-                case "7" -> System.out.println(reportController.generateUpcomingAppointmentsPerPatientReport());
+                case "7" -> System.out.println(reportController.generateUnattendAppointmentsPerPatientReport());
+                case "8" -> searchConsultations();
+                case "9" -> exportConsultations();
                 case "0" -> exit = true;
                 default -> System.out.println("Invalid option.");
             }
         }
     }
+
 
     private void createAppointment() {
         System.out.print("Patient ID: ");
@@ -62,6 +67,8 @@ public class ConsultationModuleUI {
         Appointment a = controller.createAppointmentAuto(pid, did, LocalDateTime.of(date, time), purpose);
         System.out.println(a == null ? "Invalid patient/doctor ID." : "Created: " + a.getAppointmentId());
     }
+
+
 
     private void conductConsultation() {
         String aid = pickPendingAppointmentId();
@@ -183,4 +190,30 @@ public class ConsultationModuleUI {
             }
         }
     }
+    
+    //NEW//
+    private void searchConsultations() {
+    System.out.print("Keyword: ");
+    String k = scanner.nextLine().trim();
+    var list = controller.searchConsultationsByKeyword(k);
+    if (list.getNumberOfEntries() == 0) {
+        System.out.println("(no match)");
+        return;
+    }
+    for (int i = 1; i <= list.getNumberOfEntries(); i++) {
+        var c = list.getEntry(i);
+        System.out.println("- " + c.getConsultationId() + " | " 
+                + c.getPatient().getId() + " " + c.getPatient().getName() + " | "
+                + c.getDoctor().getDoctorId() + " " + c.getDoctor().getName() + " | "
+                + c.getDateTime());
+        }
+    }
+
+    private void exportConsultations() {
+        String csv = controller.exportConsultationsCsv();
+        System.out.println("\n=== CSV START ===");
+        System.out.print(csv);
+        System.out.println("=== CSV END ===");
+    }
+
 }
