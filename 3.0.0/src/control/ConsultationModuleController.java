@@ -126,56 +126,51 @@ public class ConsultationModuleController {
         return out;
     }
 
-    public String exportConsultationsCsv() {
+    public String renderConsultationsTable() {
+        int[] w = {12,10,14,10,14,19,16,16,16};
+        String[] h = {"ConsultID","PatientID","PatientName","DoctorID","DoctorName","DateTime","Symptoms","Diagnosis","Notes"};
         StringBuilder sb = new StringBuilder();
-        sb.append("consultationId,patientId,patientName,doctorId,doctorName,datetime,symptoms,diagnosis,notes\n");
+        String sep = "+" + repeat("-", w[0]+2) + "+" + repeat("-", w[1]+2) + "+" + repeat("-", w[2]+2)
+                   + "+" + repeat("-", w[3]+2) + "+" + repeat("-", w[4]+2) + "+" + repeat("-", w[5]+2)
+                   + "+" + repeat("-", w[6]+2) + "+" + repeat("-", w[7]+2) + "+" + repeat("-", w[8]+2) + "+\n";
+        sb.append(sep);
+        sb.append("| ").append(cell(h[0], w[0])).append(" | ").append(cell(h[1], w[1])).append(" | ")
+          .append(cell(h[2], w[2])).append(" | ").append(cell(h[3], w[3])).append(" | ")
+          .append(cell(h[4], w[4])).append(" | ").append(cell(h[5], w[5])).append(" | ")
+          .append(cell(h[6], w[6])).append(" | ").append(cell(h[7], w[7])).append(" | ")
+          .append(cell(h[8], w[8])).append(" |\n");
+        sb.append(sep);
+
         for (int i = 1; i <= consultations.getNumberOfEntries(); i++) {
             Consultation c = consultations.getEntry(i);
-            String pid = c.getPatient()==null? "": c.getPatient().getId();
-            String pname = c.getPatient()==null? "": c.getPatient().getName();
-            String did = c.getDoctor()==null? "": c.getDoctor().getDoctorId();
-            String dname = c.getDoctor()==null? "": c.getDoctor().getName();
+            String cid = nz(c.getConsultationId());
+            String pid = c.getPatient()==null? "": nz(c.getPatient().getId());
+            String pname = c.getPatient()==null? "": nz(c.getPatient().getName());
+            String did = c.getDoctor()==null? "": nz(c.getDoctor().getDoctorId());
+            String dname = c.getDoctor()==null? "": nz(c.getDoctor().getName());
             String dt = c.getDateTime()==null? "": c.getDateTime().toString();
-            String sy = c.getSymptoms()==null? "": c.getSymptoms().replace(",", " ");
-            String dg = c.getDiagnosis()==null? "": c.getDiagnosis().replace(",", " ");
-            String nt = c.getNotes()==null? "": c.getNotes().replace(",", " ");
-            sb.append(c.getConsultationId()).append(",")
-              .append(pid).append(",")
-              .append(pname).append(",")
-              .append(did).append(",")
-              .append(dname).append(",")
-              .append(dt).append(",")
-              .append(sy).append(",")
-              .append(dg).append(",")
-              .append(nt).append("\n");
+            String sy = nz(c.getSymptoms());
+            String dg = nz(c.getDiagnosis());
+            String nt = nz(c.getNotes());
+
+            sb.append("| ").append(cell(cid, w[0])).append(" | ").append(cell(pid, w[1])).append(" | ")
+              .append(cell(pname, w[2])).append(" | ").append(cell(did, w[3])).append(" | ")
+              .append(cell(dname, w[4])).append(" | ").append(cell(dt, w[5])).append(" | ")
+              .append(cell(sy, w[6])).append(" | ").append(cell(dg, w[7])).append(" | ")
+              .append(cell(nt, w[8])).append(" |\n");
         }
+        sb.append(sep);
         return sb.toString();
     }
 
-    public String exportAppointmentsCsv() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("appointmentId,patientId,patientName,doctorId,doctorName,datetime,attended,purpose\n");
-        for (int i = 1; i <= appointments.getNumberOfEntries(); i++) {
-            Appointment a = appointments.getEntry(i);
-            String pid = a.getPatient()==null? "": a.getPatient().getId();
-            String pname = a.getPatient()==null? "": a.getPatient().getName();
-            String did = a.getDoctor()==null? "": a.getDoctor().getDoctorId();
-            String dname = a.getDoctor()==null? "": a.getDoctor().getName();
-            String dt = a.getDateTime()==null? "": a.getDateTime().toString();
-            boolean attended = false;
-            try { attended = a.isAttended(); } catch (Exception ignore) {}
-            String pur = a.getPurpose()==null? "": a.getPurpose().replace(",", " ");
-            sb.append(a.getAppointmentId()).append(",")
-              .append(pid).append(",")
-              .append(pname).append(",")
-              .append(did).append(",")
-              .append(dname).append(",")
-              .append(dt).append(",")
-              .append(attended).append(",")
-              .append(pur).append("\n");
-        }
-        return sb.toString();
+    private static String nz(String s) { return s == null ? "" : s.replace("\n"," ").trim(); }
+    private static String repeat(String s, int n) { StringBuilder b=new StringBuilder(); for(int i=0;i<n;i++) b.append(s); return b.toString(); }
+    private static String cell(String s, int w) {
+        if (s == null) s = "";
+        if (s.length() > w) s = s.substring(0, w-1) + "…";
+        return String.format("%-" + w + "s", s);
     }
+
 
 }
 
