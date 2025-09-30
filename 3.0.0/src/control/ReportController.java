@@ -31,9 +31,9 @@ public class ReportController {
         return sb.toString();
     }
 
-    // Report 2: upcoming (not attended) appointments per patient
-    public String generateUpcomingAppointmentsPerPatientReport() {
-        StringBuilder sb = new StringBuilder("=== Report: Upcoming Appointments per Patient ===\n");
+    // Report 2: unattend appointments per patient
+    public String generateUnattendAppointmentsPerPatientReport() {
+        StringBuilder sb = new StringBuilder("=== Report: Unattend Appointments per Patient ===\n");
         ListInterface<Patient> ps = controller.getPatients();
         ListInterface<Appointment> as = controller.getAppointments();
         for (int i = 1; i <= ps.getNumberOfEntries(); i++) {
